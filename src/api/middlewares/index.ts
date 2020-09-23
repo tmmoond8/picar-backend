@@ -1,11 +1,12 @@
 import express from 'express';
+import Logger from '../../loaders/logger';
 
 export const testMiddleware = (
   req: express.Request,
   res: express.Response,
-  next: express.NextFunction
+  next: express.NextFunction,
 ) => {
-  console.log(req.method);
+  Logger.info(req.method);
 
   if (true) {
     return next();

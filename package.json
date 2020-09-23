@@ -9,14 +9,17 @@
   "private": false,
   "dependencies": {
     "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "hpp": "^0.2.3",
+    "method-override": "^3.0.0",
     "morgan": "^1.10.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.7",
     "@types/express": "^4.17.8",
     "@types/hpp": "^0.2.1",
     "@types/morgan": "^1.9.1",
