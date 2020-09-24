@@ -15,6 +15,7 @@
     "hpp": "^0.2.3",
     "method-override": "^3.0.0",
     "morgan": "^1.10.0",
+    "sequelize-typescript": "^1.1.0",
     "winston": "^3.3.3"
   },
   "devDependencies": {
