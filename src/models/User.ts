@@ -1,7 +1,7 @@
 import { AllowNull, Column, Default, Model, Table } from 'sequelize-typescript';
 
 @Table({})
-export class Account extends Model<Account> {
+export class User extends Model<User> {
   @AllowNull(false)
   @Column
   username!: string;
