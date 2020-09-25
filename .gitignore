@@ -2,3 +2,7 @@
 
 combined.log
 error.log
+
+ormconfig.json
+
+.env
