@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import Article from './Article';
 import IUser from '../types/User';
 
@@ -33,6 +40,18 @@ export default class User {
 
   @OneToMany((type) => Article, (article) => article.author)
   articles?: Article[];
+
+  @CreateDateColumn()
+  createAt!: string;
+
+  @UpdateDateColumn()
+  updateAt!: string;
+
+  createArticle() {
+    const article = new Article();
+    article.author = this;
+    return article;
+  }
 }
 
 export function createUser(props: IUser) {
