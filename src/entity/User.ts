@@ -5,14 +5,15 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  getConnection,
 } from 'typeorm';
 import Article from './Article';
-import IUser from '../types/User';
+import IUser, { Profile } from '../types/User';
 
 @Entity()
 export default class User {
   @PrimaryGeneratedColumn('uuid')
-  id!: number;
+  id!: string;
 
   @Column()
   name!: string;
@@ -49,8 +50,19 @@ export default class User {
 
   createArticle() {
     const article = new Article();
-    article.author = this;
+    article.authorProfile = this.profile;
     return article;
+  }
+
+  public get profile(): Profile {
+    return {
+      coverImg: this.coverImg,
+      description: this.description,
+      id: this.id,
+      thumbnail: this.thumbnail,
+      name: this.name,
+      email: this.email,
+    };
   }
 }
 
@@ -67,12 +79,4 @@ export function createUser(props: IUser) {
   return user;
 }
 
-// public get profile(): object {
-//   return {
-//     coverImg: this.coverImg,
-//     description: this.description,
-//     id: this.id,
-//     thumbnail: this.thumbnail,
-//     username: this.username,
-//   };
-// }
+export const UserRepository = () => getConnection().getRepository(User);

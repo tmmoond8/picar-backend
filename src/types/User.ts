@@ -1,10 +1,13 @@
-export default interface User {
-  id?: number;
+export interface Profile {
+  id?: string;
   name: string;
   thumbnail?: string;
   coverImg?: string;
   email: string;
+  description?: string;
+}
+
+export default interface User extends Profile {
   provider: string;
   snsId: string;
-  description?: string;
 }

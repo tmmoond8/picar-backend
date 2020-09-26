@@ -5,8 +5,10 @@ import {
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
+  getConnection,
 } from 'typeorm';
 import User from './User';
+import { Profile } from '../types/User';
 
 @Entity()
 export default class Article {
@@ -22,8 +24,13 @@ export default class Article {
   @Column()
   group!: string;
 
+  @Column({ nullable: true })
+  authorId?: string;
+
   @ManyToOne((type) => User, (user) => user.articles)
   author!: User;
+
+  authorProfile?: Profile;
 
   // public get info(): object {
   //   const { id: userId, username, thumbnail } = this.user;
@@ -53,3 +60,5 @@ export function createArticle(props: { content: string; author: User }) {
   article.author = props.author;
   return article;
 }
+
+export const ArticleRepository = () => getConnection().getRepository(Article);
