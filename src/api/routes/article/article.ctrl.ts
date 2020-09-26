@@ -1,6 +1,7 @@
 import express from 'express';
 import { getConnection } from 'typeorm';
-import User, { createUser } from '../../../entity/User';
+import User from '../../../entity/User';
+import Article from '../../../entity/Article';
 
 class ArticleController {
   public get = async (
@@ -24,13 +25,20 @@ class ArticleController {
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const user = createUser({
-      name: 'kaka',
-      email: 'kaka@test.com',
-      provider: 'google',
-      snsId: '3939732',
-    });
-    await getConnection().getRepository(User).save(user);
+    const { body } = req;
+    try {
+      const user = await getConnection()
+        .getRepository(User)
+        .findOne({ name: 'kaka' });
+      const article = user!.createArticle();
+      article!.title = body.title;
+      article!.content = body.content;
+      await getConnection().getRepository(Article).save(article);
+      res.json({ ok: true, message: 'write', article });
+    } catch (error) {
+      next(error);
+    }
+
     res.json({ ok: true, message: 'write' });
   };
 }
