@@ -7,7 +7,7 @@ const route = Router();
 export default (app: Router) => {
   app.use('/article', route);
 
-  route.get('/:id', testMiddleware, articleContoller.get);
   route.get('/list', articleContoller.list);
   route.post('/write', articleContoller.write);
+  route.get('/:id', testMiddleware, articleContoller.get);
 };

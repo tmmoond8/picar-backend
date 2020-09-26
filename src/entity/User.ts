@@ -10,7 +10,7 @@ import {
 import Article from './Article';
 import IUser, { Profile } from '../types/User';
 
-@Entity()
+@Entity({ name: 'user' })
 export default class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

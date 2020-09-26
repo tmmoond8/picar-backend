@@ -10,7 +10,7 @@ import {
 import User from './User';
 import { Profile } from '../types/User';
 
-@Entity()
+@Entity({ name: 'article' })
 export default class Article {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -52,6 +52,12 @@ export default class Article {
 
   @UpdateDateColumn()
   updateAt!: string;
+
+  get [Symbol.toStringTag]() {
+    return JSON.stringify(
+      Object.assign({}, this, { author: this.author.profile }),
+    );
+  }
 }
 
 export function createArticle(props: { content: string; author: User }) {
