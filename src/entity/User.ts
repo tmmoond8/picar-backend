@@ -1,9 +1,10 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 import Article from './Article';
+import IUser from '../types/User';
 
 @Entity()
 export default class User {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id!: number;
 
   @Column()
@@ -31,16 +32,9 @@ export default class User {
   articles?: Article[];
 }
 
-export function createUser(props: {
-  name: string;
-  thumbnail?: string;
-  coverImg?: string;
-  email: string;
-  provider: string;
-  snsId: string;
-  description?: string;
-}) {
+export function createUser(props: IUser) {
   const user = new User();
+  if (props.id) user.id = props.id;
   user.name = props.name;
   user.thumbnail = props.thumbnail;
   user.coverImg = props.coverImg;
