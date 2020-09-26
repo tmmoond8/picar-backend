@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import User from './User';
 
 @Entity()
@@ -6,8 +13,14 @@ export default class Article {
   @PrimaryGeneratedColumn()
   id!: number;
 
+  @Column()
+  title!: string;
+
   @Column('text')
   content!: string;
+
+  @Column()
+  group!: string;
 
   @ManyToOne((type) => User, (user) => user.articles)
   author!: User;
@@ -26,6 +39,12 @@ export default class Article {
   //     },
   //   };
   // }
+
+  @CreateDateColumn()
+  createAt!: string;
+
+  @UpdateDateColumn()
+  updateAt!: string;
 }
 
 export function createArticle(props: { content: string; author: User }) {
