@@ -35,15 +35,20 @@ class ArticleController {
     res: express.Response,
     next: express.NextFunction,
   ) => {
+    const {
+      query: { group },
+    } = req;
     try {
       const articles = await ArticleRepository()
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.author', 'user')
+        .where(group ? 'article.group = :group' : '1=1', { group })
         .getMany();
       res.json({ ok: true, message: 'list', articles });
     } catch (error) {
       next(error);
     }
+
     res.json({ ok: true, message: 'list' });
   };
 
