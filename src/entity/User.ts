@@ -50,7 +50,7 @@ export default class User {
 
   createArticle() {
     const article = new Article();
-    article.authorProfile = this.profile;
+    article.author = this;
     return article;
   }
 

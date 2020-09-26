@@ -8,7 +8,6 @@ import {
   getConnection,
 } from 'typeorm';
 import User from './User';
-import { Profile } from '../types/User';
 
 @Entity({ name: 'article' })
 export default class Article {
@@ -29,8 +28,6 @@ export default class Article {
 
   @ManyToOne((type) => User, (user) => user.articles)
   author!: User;
-
-  authorProfile?: Profile;
 
   // public get info(): object {
   //   const { id: userId, username, thumbnail } = this.user;
