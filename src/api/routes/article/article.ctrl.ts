@@ -36,7 +36,10 @@ class ArticleController {
     next: express.NextFunction,
   ) => {
     try {
-      const articles = await ArticleRepository().find();
+      const articles = await ArticleRepository()
+        .createQueryBuilder('article')
+        .leftJoinAndSelect('article.author', 'user')
+        .getMany();
       res.json({ ok: true, message: 'list', articles });
     } catch (error) {
       next(error);
