@@ -29,20 +29,8 @@ export default class Article {
   @ManyToOne((type) => User, (user) => user.articles)
   author!: User;
 
-  // public get info(): object {
-  //   const { id: userId, username, thumbnail } = this.user;
-
-  //   return {
-  //     content: this.content,
-  //     createdAt: this.createdAt,
-  //     id: this.id,
-  //     profile: {
-  //       id: userId,
-  //       thumbnail,
-  //       username,
-  //     },
-  //   };
-  // }
+  @Column({ type: 'text', nullable: true })
+  photos!: string;
 
   @CreateDateColumn()
   createAt!: string;
