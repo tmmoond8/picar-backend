@@ -58,7 +58,7 @@ export default class User {
     return article;
   }
 
-  createComment(articleId: string) {
+  createComment(articleId: number) {
     const comment = new Comment();
     comment.author = this;
     comment.articleId = articleId;

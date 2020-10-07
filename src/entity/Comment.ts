@@ -23,8 +23,8 @@ export default class Comment {
   @ManyToOne((type) => User, (user) => user.comments)
   author!: User;
 
-  @Column({ nullable: true })
-  articleId?: string;
+  @Column()
+  articleId!: number;
 
   @Column({ type: 'text', nullable: true })
   photos!: string;

@@ -11,8 +11,8 @@ import User from './User';
 
 @Entity({ name: 'article' })
 export default class Article {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
   @Column()
   title!: string;
