@@ -9,25 +9,22 @@ import {
 } from 'typeorm';
 import User from './User';
 
-@Entity({ name: 'article' })
-export default class Article {
+@Entity({ name: 'comment' })
+export default class Comment {
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
-
-  @Column()
-  title!: string;
+  id!: number;
 
   @Column('text')
   content!: string;
 
-  @Column()
-  group!: string;
-
   @Column({ nullable: true })
   authorId?: string;
 
-  @ManyToOne((type) => User, (user) => user.articles)
+  @ManyToOne((type) => User, (user) => user.comments)
   author!: User;
+
+  @Column({ nullable: true })
+  articleId?: string;
 
   @Column({ type: 'text', nullable: true })
   photos!: string;
@@ -37,12 +34,6 @@ export default class Article {
 
   @UpdateDateColumn()
   updateAt!: string;
-
-  get [Symbol.toStringTag]() {
-    return JSON.stringify(
-      Object.assign({}, this, { author: this.author.profile }),
-    );
-  }
 }
 
-export const ArticleRepository = () => getConnection().getRepository(Article);
+export const CommentRepository = () => getConnection().getRepository(Comment);

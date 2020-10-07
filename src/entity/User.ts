@@ -8,6 +8,7 @@ import {
   getConnection,
 } from 'typeorm';
 import Article from './Article';
+import Comment from './Comment';
 import IUser, { Profile } from '../types/User';
 
 @Entity({ name: 'user' })
@@ -42,6 +43,9 @@ export default class User {
   @OneToMany((type) => Article, (article) => article.author)
   articles?: Article[];
 
+  @OneToMany((type) => Comment, (comment) => comment.author)
+  comments?: Comment[];
+
   @CreateDateColumn()
   createAt!: string;
 
@@ -52,6 +56,13 @@ export default class User {
     const article = new Article();
     article.author = this;
     return article;
+  }
+
+  createComment(articleId: string) {
+    const comment = new Comment();
+    comment.author = this;
+    comment.articleId = articleId;
+    return comment;
   }
 
   public get profile(): Profile {
