@@ -30,7 +30,7 @@ export default class Article {
   author!: User;
 
   @Column({ type: 'text', nullable: true })
-  photos!: string;
+  photos?: string;
 
   @CreateDateColumn()
   createAt!: string;

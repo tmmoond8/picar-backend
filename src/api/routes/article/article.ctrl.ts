@@ -66,6 +66,7 @@ class ArticleController {
       article!.title = body.title;
       article!.content = body.content;
       article!.group = body.group;
+      article!.photos = body.photos;
       await getConnection().getRepository(Article).save(article);
       res.json({ ok: true, message: 'write', article });
     } catch (error) {
