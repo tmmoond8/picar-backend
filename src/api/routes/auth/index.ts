@@ -10,4 +10,5 @@ export default (app: Router) => {
   route.get('/check', testMiddleware, articleContoller.check);
   route.get('/signIn', articleContoller.signIn);
   route.post('/signUp', articleContoller.signUp);
+  route.post('/signIn/kakao', articleContoller.kakaoLogin);
 };

@@ -10,6 +10,7 @@ import {
 import Article from './Article';
 import Comment from './Comment';
 import IUser, { Profile } from '../types/User';
+import { generateToken } from '../lib/token';
 
 @Entity({ name: 'user' })
 export default class User {
@@ -74,6 +75,12 @@ export default class User {
       name: this.name,
       email: this.email,
     };
+  }
+
+  public get generateToken(): any {
+    return generateToken({
+      profile: this.profile
+    })
   }
 }
 
