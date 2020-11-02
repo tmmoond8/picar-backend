@@ -36,13 +36,13 @@ class ArticleController {
     next: express.NextFunction,
   ) => {
     const {
-      query: { group },
+      query: { lounge },
     } = req;
     try {
       const articles = await ArticleRepository()
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.author', 'user')
-        .where(group ? 'article.group = :group' : '1=1', { group })
+        .where(lounge ? 'article.lounge = :lounge' : '1=1', { lounge })
         .getMany();
       res.json({ ok: true, message: 'list', articles });
     } catch (error) {
@@ -65,7 +65,7 @@ class ArticleController {
       const article = user!.createArticle();
       article!.title = body.title;
       article!.content = body.content;
-      article!.group = body.group;
+      article!.lounge = body.lounge;
       article!.photos = body.photos;
       await getConnection().getRepository(Article).save(article);
       res.json({ ok: true, message: 'write', article });

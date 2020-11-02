@@ -21,7 +21,7 @@ export default class User {
   name!: string;
 
   @Column({ nullable: true })
-  group?: string;
+  lounge?: string;
 
   @Column({ nullable: true })
   thumbnail?: string;

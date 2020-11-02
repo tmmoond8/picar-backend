@@ -4,7 +4,7 @@ export default interface Article {
   id?: number;
   title: string;
   content: string;
-  group: string;
+  lounge: string;
   author: Profile;
   createAt: Date;
   updateAt: Date;
