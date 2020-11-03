@@ -2,7 +2,7 @@ export interface Profile {
   id?: string;
   name: string;
   thumbnail?: string;
-  coverImg?: string;
+  profileImage?: string;
   email: string;
   description?: string;
 }

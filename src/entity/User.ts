@@ -17,6 +17,9 @@ export default class User {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
+  @Column({ unique: true })
+  code!: string;
+
   @Column()
   name!: string;
 
@@ -27,7 +30,7 @@ export default class User {
   thumbnail?: string;
 
   @Column({ nullable: true })
-  coverImg?: string;
+  profileImage?: string;
 
   @Column()
   email!: string;
@@ -68,7 +71,7 @@ export default class User {
 
   public get profile(): Profile {
     return {
-      coverImg: this.coverImg,
+      profileImage: this.profileImage,
       description: this.description,
       id: this.id,
       thumbnail: this.thumbnail,
@@ -89,11 +92,12 @@ export function createUser(props: IUser) {
   if (props.id) user.id = props.id;
   user.name = props.name;
   user.thumbnail = props.thumbnail;
-  user.coverImg = props.coverImg;
+  user.profileImage = props.profileImage;
   user.email = props.email;
   user.provider = props.provider;
   user.snsId = props.snsId;
   user.description = props.description;
+  user.code = Math.random().toString(36).substr(2, 9);
   return user;
 }
 

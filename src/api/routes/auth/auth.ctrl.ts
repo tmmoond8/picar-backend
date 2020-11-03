@@ -95,6 +95,7 @@ async function getUser(
   const { email, snsId, thumbnail, name } = profile;
   let user = await getConnection().getRepository(User).findOne({ where: { snsId, provider } });
   if (!user) {
+    console.log('created');
     const newUser = createUser({
       email,
       provider,
@@ -104,5 +105,6 @@ async function getUser(
     });
     user = await getConnection().getRepository(User).save(newUser);
   }
+  console.log(user);
   return user;
 }
