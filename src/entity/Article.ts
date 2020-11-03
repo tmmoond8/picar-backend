@@ -21,7 +21,7 @@ export default class Article {
   content!: string;
 
   @Column()
-  lounge!: string;
+  group!: string;
 
   @Column({ nullable: true })
   authorId?: string;
