@@ -71,9 +71,13 @@ export default new AuthController();
 function validateLoginProfile(profile: any) {
   const schema = Joi.object().keys({
     email: Joi.string().email().required(),
+    group: Joi.string().required(),
+    isOwner: Joi.boolean().required(),
+    name: Joi.string().required(),
+    profile: Joi.string(),
+    provider: Joi.string(),
     snsId: Joi.string().required(),
     thumbnail: Joi.string(),
-    name: Joi.string().required(),
   });
   return schema.validate(profile);
 }
@@ -89,22 +93,22 @@ async function getUser(
     snsId: string;
     thumbnail: string;
     name: string;
+    group: string;
   },
   provider: 'kakao' | 'naver'
 ) {
-  const { email, snsId, thumbnail, name } = profile;
+  const { email, snsId, thumbnail, name, group } = profile;
   let user = await getConnection().getRepository(User).findOne({ where: { snsId, provider } });
   if (!user) {
-    console.log('created');
     const newUser = createUser({
       email,
       provider,
       snsId,
       thumbnail,
       name,
+      group,
     });
     user = await getConnection().getRepository(User).save(newUser);
   }
-  console.log(user);
   return user;
 }

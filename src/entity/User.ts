@@ -23,8 +23,8 @@ export default class User {
   @Column()
   name!: string;
 
-  @Column({ nullable: true })
-  group?: string;
+  @Column()
+  group!: string;
 
   @Column({ nullable: true })
   thumbnail?: string;
@@ -77,6 +77,7 @@ export default class User {
       thumbnail: this.thumbnail,
       name: this.name,
       email: this.email,
+      group: this.group,
     };
   }
 
@@ -94,6 +95,7 @@ export function createUser(props: IUser) {
   user.thumbnail = props.thumbnail;
   user.profileImage = props.profileImage;
   user.email = props.email;
+  user.group = props.group;
   user.provider = props.provider;
   user.snsId = props.snsId;
   user.description = props.description;
