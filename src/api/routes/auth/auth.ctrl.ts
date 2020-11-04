@@ -18,7 +18,11 @@ class AuthController {
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    res.json({ ok: true, message: 'check' });
+    const { body } = req;
+    if ('user' in body) {
+      res.json({ ok: true, message: 'user', data: body.user.profile });
+    }
+    res.json({ ok: false, message: 'guest' });
   };
 
   public signUp = async (
@@ -74,7 +78,7 @@ function validateLoginProfile(profile: any) {
     group: Joi.string().required(),
     isOwner: Joi.boolean().required(),
     name: Joi.string().required(),
-    profile: Joi.string(),
+    profileImage: Joi.string(),
     provider: Joi.string(),
     snsId: Joi.string().required(),
     thumbnail: Joi.string(),
@@ -92,12 +96,13 @@ async function getUser(
     email: string;
     snsId: string;
     thumbnail: string;
+    profileImage: string;
     name: string;
     group: string;
   },
   provider: 'kakao' | 'naver'
 ) {
-  const { email, snsId, thumbnail, name, group } = profile;
+  const { email, snsId, thumbnail, name, group, profileImage } = profile;
   let user = await getConnection().getRepository(User).findOne({ where: { snsId, provider } });
   if (!user) {
     const newUser = createUser({
@@ -105,6 +110,7 @@ async function getUser(
       provider,
       snsId,
       thumbnail,
+      profileImage,
       name,
       group,
     });

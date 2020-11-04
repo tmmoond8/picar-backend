@@ -73,7 +73,7 @@ export default class User {
     return {
       profileImage: this.profileImage,
       description: this.description,
-      id: this.id,
+      code: this.code,
       thumbnail: this.thumbnail,
       name: this.name,
       email: this.email,
