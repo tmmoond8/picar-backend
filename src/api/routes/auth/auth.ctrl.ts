@@ -5,15 +5,7 @@ import User, { createUser } from '../../../entity/User';
 import { setCookie } from '../../../lib/token';
 
 class AuthController {
-  public signIn = async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    res.json({ ok: true, message: 'signIn' });
-  };
-
-  public check = async (
+  public getUser = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
@@ -25,16 +17,17 @@ class AuthController {
     res.json({ ok: false, message: 'guest' });
   };
 
-  public signUp = async (
+  public check = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { body } = req;
-    const user = createUser(body);
-
-    await getConnection().getRepository(User).save(user);
-    res.json({ ok: true, message: `created: ${user.id}` });
+    const { query: { snsId, provider} } = req;
+    let user = await getConnection().getRepository(User).findOne({ where: { snsId, provider } });
+    if (user) {
+      res.json({ ok: true, message: `found`, data: user.profile });
+    }
+    res.json({ ok: true, message: `not found`, data: null });
   };
 
   // Kakao 로그인
@@ -62,6 +55,19 @@ class AuthController {
     } catch (error) {
       return next(error);
     }
+  };
+
+  // Kakao 체크
+  public kakaoCheck = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    const {
+      query,
+    } = req;
+    console.log(query);
+    return res.json(query);
   };
 }
 
