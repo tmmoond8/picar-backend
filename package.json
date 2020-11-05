@@ -42,7 +42,7 @@
   },
   "scripts": {
     "build": "yarn clean & tsc",
-    "start": "cross-env NODE_ENV=production pm2 start dist/app.js -i 0",
+    "start": "NODE_ENV=production pm2 start dist/app.js -i 0",
     "stop": "pm2 kill",
     "restart": "yarn stop & yarn start",
     "dev": "nodemon --exec ts-node src/app.ts",
