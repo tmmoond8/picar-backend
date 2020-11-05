@@ -61,7 +61,7 @@ class ArticleController {
     try {
       const user = await getConnection()
         .getRepository(User)
-        .findOne({ name: 'kaka' });
+        .findOne({ code: body.user.profile.code });
       const article = user!.createArticle();
       article!.title = body.title;
       article!.content = body.content;
