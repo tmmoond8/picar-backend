@@ -43,6 +43,7 @@ class ArticleController {
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.author', 'user')
         .where(group ? 'article.group = :group' : '1=1', { group })
+        .orderBy("article.createAt", "DESC")
         .getMany();
       res.json({ ok: true, message: 'list', articles });
     } catch (error) {
