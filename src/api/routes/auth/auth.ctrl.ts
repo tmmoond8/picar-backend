@@ -28,8 +28,9 @@ class AuthController {
       const token = await user.generateToken;
       setCookie(res, token);
       res.json({ ok: true, message: `found`, data: user.profile });
+    } else {
+      res.json({ ok: true, message: `not found`, data: null });
     }
-    res.json({ ok: true, message: `not found`, data: null });
   };
 
   // Kakao 로그인
