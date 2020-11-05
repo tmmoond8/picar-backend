@@ -25,6 +25,8 @@ class AuthController {
     const { query: { snsId, provider} } = req;
     let user = await getConnection().getRepository(User).findOne({ where: { snsId, provider } });
     if (user) {
+      const token = await user.generateToken;
+      setCookie(res, token);
       res.json({ ok: true, message: `found`, data: user.profile });
     }
     res.json({ ok: true, message: `not found`, data: null });
