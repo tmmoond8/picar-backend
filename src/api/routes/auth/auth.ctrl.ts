@@ -26,7 +26,7 @@ class AuthController {
     let user = await getConnection().getRepository(User).findOne({ where: { snsId, provider } });
     if (user) {
       const token = await user.generateToken;
-      setCookie(res, token);
+      setCookie(req, res, token);
       res.json({ ok: true, message: `found`, data: user.profile });
     } else {
       res.json({ ok: true, message: `not found`, data: null });
@@ -53,7 +53,7 @@ class AuthController {
         throw new Error('');
       }
       const token = await user.generateToken;
-      setCookie(res, token);
+      setCookie(req, res, token);
       return res.json(user.profile);
     } catch (error) {
       return next(error);

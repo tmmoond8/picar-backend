@@ -1,5 +1,6 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
+import urlParse from 'url-parse';
 
 const jwtSecret: any = process.env.JWT_SECRET;
 
@@ -57,8 +58,11 @@ export const jwtMiddleware = async (
   return next();
 };
 
-export const setCookie = (res: express.Response, token: string) => {
+export const setCookie = (req: express.Request, res: express.Response, token: string) => {
+  const url = urlParse(req.headers.referer || '');
+  const domain = url.hostname.replace('owner-api', '')
   res.cookie('access_token', token, {
     maxAge: 1000 * 60 * 60 * 24 * 7,
+    domain
   });
 };
