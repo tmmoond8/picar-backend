@@ -60,7 +60,7 @@ export const jwtMiddleware = async (
 
 export const setCookie = (req: express.Request, res: express.Response, token: string) => {
   const url = urlParse(req.headers.referer || '');
-  const domain = url.hostname.replace('owner-api', '')
+  const domain = url.hostname.replace('owner', '')
   res.cookie('access_token', token, {
     maxAge: 1000 * 60 * 60 * 24 * 7,
     domain
