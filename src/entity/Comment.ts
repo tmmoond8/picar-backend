@@ -12,7 +12,7 @@ import User from './User';
 @Entity({ name: 'comment' })
 export default class Comment {
   @PrimaryGeneratedColumn('uuid')
-  id!: number;
+  id!: string;
 
   @Column('text')
   content!: string;
@@ -26,8 +26,13 @@ export default class Comment {
   @Column()
   articleId!: number;
 
+  @Column({ nullable: true })
+  about!: string;
+
   @Column({ type: 'text', nullable: true })
   photos!: string;
+
+  replies?: Comment[];
 
   @CreateDateColumn()
   createAt!: string;
