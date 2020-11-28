@@ -58,26 +58,6 @@ class CommentController {
       next(error);
     }
   };
-
-  public count = async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    const {
-      params: { articleId },
-    } = req;
-    try {
-      const comments = await CommentRepository()
-        .createQueryBuilder('comment')
-        .leftJoinAndSelect('comment.author', 'user')
-        .where('comment.articleId = :articleId', { articleId })
-        .getMany();
-      res.json({ ok: true, message: 'count', count: comments.length });
-    } catch (error) {
-      next(error);
-    }
-  };
 }
 
 export default new CommentController();
