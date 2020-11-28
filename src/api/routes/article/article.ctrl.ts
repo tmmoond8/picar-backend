@@ -1,10 +1,10 @@
 import express from 'express';
 import { getConnection } from 'typeorm';
 import User from '../../../entity/User';
-import Article, { ArticleRepository } from '../../../entity/Article';
-// import { UserRepository } from '../../../entity/User';
+import ArticleRepository from '../../../repository/ArticleRepository';
 
 class ArticleController {
+
   public get = async (
     req: express.Request,
     res: express.Response,
@@ -14,11 +14,7 @@ class ArticleController {
       params: { id },
     } = req;
     try {
-      const article = await ArticleRepository()
-        .createQueryBuilder('article')
-        .leftJoinAndSelect('article.author', 'user')
-        .where('article.id = :id', { id: Number(id) })
-        .getOne();
+      const article = await ArticleRepository().get(id);
       res.json({
         ok: true,
         message: 'get',
@@ -39,12 +35,7 @@ class ArticleController {
       query: { group },
     } = req;
     try {
-      const articles = await ArticleRepository()
-        .createQueryBuilder('article')
-        .leftJoinAndSelect('article.author', 'user')
-        .where(group ? 'article.group = :group' : '1=1', { group })
-        .orderBy("article.createAt", "DESC")
-        .getMany();
+      const articles = await ArticleRepository().list(!!group ? group.toString() : '');
       res.json({ ok: true, message: 'list', articles });
     } catch (error) {
       next(error);
@@ -68,7 +59,7 @@ class ArticleController {
       article!.content = body.content;
       article!.group = body.group;
       article!.photos = body.photos;
-      await getConnection().getRepository(Article).save(article);
+      await ArticleRepository().save(article);
       res.json({ ok: true, message: 'write', article });
     } catch (error) {
       next(error);
