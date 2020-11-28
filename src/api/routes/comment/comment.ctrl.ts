@@ -17,6 +17,7 @@ class CommentController {
         .createQueryBuilder('comment')
         .leftJoinAndSelect('comment.author', 'user')
         .where('comment.articleId = :articleId', { articleId })
+        .orderBy("comment.createAt", "ASC")
         .getMany();
 
       const comments = Allcomments.filter(comment => !comment.about).reduce((accum: any, comment) => {
