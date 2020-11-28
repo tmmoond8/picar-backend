@@ -32,6 +32,12 @@ export default class Article {
   @Column({ type: 'text', nullable: true })
   photos?: string;
 
+  @Column({ default: 0})
+  commentCount!: number;
+
+  @Column({ default: 0})
+  emotionCount!: number;
+
   @CreateDateColumn()
   createAt!: string;
 

@@ -2,6 +2,7 @@ import express from 'express';
 import { getConnection } from 'typeorm';
 import User from '../../../entity/User';
 import Comment, { CommentRepository } from '../../../entity/Comment';
+import ArticleRepository from '../../../repository/ArticleRepository';
 
 class CommentController {
   public list = async (
@@ -41,7 +42,6 @@ class CommentController {
     next: express.NextFunction,
   ) => {
     const { body } = req;
-    console.log(body);
     try {
       const user = await getConnection()
         .getRepository(User)
@@ -50,6 +50,9 @@ class CommentController {
       comment!.content = body.content;
       comment!.about = body.about || null;
       await getConnection().getRepository(Comment).save(comment);
+      if (!!body.about) {
+        await ArticleRepository().increaseComment(body.articleId);
+      }
       res.json({ ok: true, message: 'write', comment });
     } catch (error) {
       next(error);

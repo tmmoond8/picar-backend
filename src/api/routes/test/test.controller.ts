@@ -1,4 +1,5 @@
 import express from 'express';
+import Article from '../../../entity/Article'
 import { ArticleRepository } from '../../../entity/Article';
 
 class TestController {
@@ -12,13 +13,24 @@ class TestController {
       .createQueryBuilder('article')
       .where('article.id = :articleId', { articleId: 67 })
       .getOne();
+      console.log(article?.commentCount);
+      
+      await ArticleRepository()
+        .createQueryBuilder()
+        .update(Article)
+        .set({ commentCount: () => "commentCount + 1"})
+        .where('article.id = :articleId', { articleId: 67 })
+        .execute();
+        
+    // .where("id = :id", { id: 1 })
 
-      if (article) {
-        article.commentCount = article.commentCount + 1;
-        await ArticleRepository().save(article, {
-          transaction: false,
-        })
-      }
+      
+      // if (article) {
+      //   article.commentCount = article.commentCount + 1;
+      //   await ArticleRepository().save(article, {
+      //     transaction: false,
+      //   })
+      // }
     } catch (error) {
 
     }

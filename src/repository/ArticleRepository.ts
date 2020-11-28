@@ -6,17 +6,16 @@ import Article from '../entity/Article';
 
 class ArticleRepository {
 
-  _reposition: Repository<Article> | null = null;
+  reposition: Repository<Article> | null = null;
   constructor() {
-    this._reposition = getConnection().getRepository(Article);
+    this.reposition = getConnection().getRepository(Article);
   }
 
   list(group: string) {
-    console.log(group);
-    if (!this._reposition) {
+    if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
-      return this._reposition
+      return this.reposition
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.author', 'user')
         .where(group ? 'article.group = :group' : '1=1', { group })
@@ -25,10 +24,10 @@ class ArticleRepository {
     }
   }
   get(id: string) {
-    if (!this._reposition) {
+    if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
-      return this._reposition
+      return this.reposition
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.author', 'user')
         .where('article.id = :id', { id: parseInt(id) })
@@ -36,10 +35,32 @@ class ArticleRepository {
     }
   }
   save(article: Article) {
-    if (!this._reposition) {
+    if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
-      return this._reposition?.save(article);
+      return this.reposition?.save(article);
+    }
+  }
+  increaseComment(id: number) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition.createQueryBuilder()
+        .update(Article)
+        .set({ commentCount: () => "commentCount + 1"})
+        .where('article.id = :articleId', { articleId: 67 })
+        .execute();
+    }
+  }
+  decreaseComment(id: number) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition.createQueryBuilder()
+        .update(Article)
+        .set({ commentCount: () => "commentCount - 1"})
+        .where('article.id = :articleId', { articleId: 67 })
+        .execute();
     }
   }
 }
