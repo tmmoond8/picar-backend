@@ -4,3 +4,6 @@ combined.log
 error.log
 
 .env
+
+/dist
+/build
