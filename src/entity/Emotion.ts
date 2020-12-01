@@ -18,7 +18,7 @@ export default class Emotion {
   authorId!: string;
 
   @Column()
-  emotion!: string;
+  type!: string;
 
   @CreateDateColumn()
   createAt!: string;
@@ -30,11 +30,11 @@ export default class Emotion {
 export function createEmotion(params: {
   articleId: number;
   authorId: string;
-  emotion: string;
+  type: string;
 }) {
   const emotion = new Emotion();
   emotion.articleId = params.articleId;
   emotion.authorId = params.authorId;
-  emotion.emotion = params.emotion;
+  emotion.type = params.type;
   return emotion;
 }

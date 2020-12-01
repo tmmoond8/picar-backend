@@ -2,7 +2,7 @@ import {
   getConnection,
   Repository,
 } from 'typeorm';
-import Emotion, { createEmotion } from '../entity/Emotion';
+import Emotion from '../entity/Emotion';
 
 class EmotionRepository {
   reposition: Repository<Emotion> | null = null;
@@ -20,25 +20,30 @@ class EmotionRepository {
         .getMany();
     }
   }
-  add(params: {articleId: number, authorId: string; emotion: string}) {
+
+  cud(params: {articleId: number, authorId: string}) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
-      const newEmotion = createEmotion(params);
-      return this.reposition.save(newEmotion);
+      return this.reposition.createQueryBuilder('emotion')
+          .where('emotion.articleId = :articleId', { articleId: params.articleId })
+          .andWhere('emotion.authorId = :authorId', { authorId: params.authorId })
+          .getOne();
     }
   }
 
-  delete(params: {articleId: number, authorId: string;}) {
+  save(emotion: Emotion) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
-      return this.reposition.createQueryBuilder()
-        .delete()
-        .from(Emotion)
-        .where('emotion.articleId = :articleId', params)
-        .andWhere('emotion.authorId = :authorId', params)
-        .execute();
+      this.reposition.save(emotion);
+    }
+  }
+  remove(emotion: Emotion) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      this.reposition.remove(emotion);
     }
   }
 }
