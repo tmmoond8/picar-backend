@@ -49,25 +49,33 @@ class EmotionController {
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { body } = req;
+    const { body: {
+      articleId,
+      type,
+      user
+    }} = req;
+
     try {
       const existed = await EmotionRepository().cud({
-        articleId: body.articleId,
-        authorId: '0f13e37e-0849-42b5-8d70-b44a4499335e',
+        articleId: articleId,
+        authorId: user.profile.id,
       });
       let work = '';
 
       if (existed) {
-        if (existed.type === body.type) {
+        if (existed.type === type) {
           await EmotionRepository().remove(existed);
           work = 'removed';
         } else {
-          existed.type = body.type;
+          existed.type = type;
           await EmotionRepository().save(existed);
           work = 'updated';
         }
       } else {
-        const newEmotion = createEmotion(body);
+        const newEmotion = createEmotion({
+          articleId,
+          type,
+          authorId: user.profile.id});
         EmotionRepository().save(newEmotion);
         work = 'created';
       }
