@@ -17,7 +17,7 @@ class EmotionController {
   ) => {
     const {
       params: { articleId },
-      body: { user: { profile} },
+      body: { user },
     } = req;
     const emotionCount = {
       [EMOTION_TYPE.LOVE]: 0,
@@ -32,15 +32,13 @@ class EmotionController {
         if (emotion.type in accum) {
           accum[emotion.type as keyof typeof EMOTION_TYPE] = accum[emotion.type  as keyof typeof EMOTION_TYPE] + 1;
         }
-        if (emotion.authorId === profile.id) {
+
+        if (emotion.authorId === user.profile.id) {
           yourEmotion = emotion.type;
         }
         return accum;
       }, emotionCount);
-      res.json({ ok: true, message: 'list', emotions: {
-        emotionCount,
-        yourEmotion,
-      },  });
+      res.json({ ok: true, message: 'list', emotionCount, yourEmotion, });
     } catch (error) {
       next(error);
     }
