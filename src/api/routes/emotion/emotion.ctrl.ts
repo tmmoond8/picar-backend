@@ -1,6 +1,6 @@
 import express from 'express';
 import EmotionRepository from '../../../repository/EmotionRepository';
-import { createEmotion } from '../../../entity/Emotion';
+import Emotion, { createEmotion } from '../../../entity/Emotion';
 
 const EMOTION_TYPE = {
   LOVE: 'LOVE',
@@ -8,6 +8,8 @@ const EMOTION_TYPE = {
   LAUGHING: 'LAUGHING',
   ANGRY: 'ANGRY'
 } as const;
+
+type EmotionKey = keyof typeof EMOTION_TYPE;
 
 class EmotionController {
   public list = async (
@@ -19,25 +21,9 @@ class EmotionController {
       params: { articleId },
       body: { user },
     } = req;
-    const emotionCount = {
-      [EMOTION_TYPE.LOVE]: 0,
-      [EMOTION_TYPE.SAD]: 0,
-      [EMOTION_TYPE.LAUGHING]: 0,
-      [EMOTION_TYPE.ANGRY]: 0,
-    }
     try {
       const emotions = await EmotionRepository().list(articleId);
-      let yourEmotion = '';
-      emotions.reduce((accum, emotion) => {
-        if (emotion.type in accum) {
-          accum[emotion.type as keyof typeof EMOTION_TYPE] = accum[emotion.type  as keyof typeof EMOTION_TYPE] + 1;
-        }
-
-        if (emotion.authorId === user.profile.id) {
-          yourEmotion = emotion.type;
-        }
-        return accum;
-      }, emotionCount);
+      const { emotionCount, yourEmotion}  = getEmotionCounter(emotions, user?.profile?.id);
       res.json({ ok: true, message: 'list', emotionCount, yourEmotion, });
     } catch (error) {
       next(error);
@@ -56,20 +42,28 @@ class EmotionController {
     }} = req;
 
     try {
+      const emotionListPromise = EmotionRepository().list(articleId);
       const existed = await EmotionRepository().cud({
         articleId: articleId,
         authorId: user.profile.id,
       });
-      let work = '';
-
+      let updateStatus = '';
+      const emotions = await emotionListPromise;
+      let { emotionCount, yourEmotion}  = getEmotionCounter(emotions, user.profile.id);
+      
       if (existed) {
         if (existed.type === type) {
           await EmotionRepository().remove(existed);
-          work = 'removed';
+          updateStatus = 'removed';
+          emotionCount[existed?.type as EmotionKey] = emotionCount[existed?.type as EmotionKey] - 1;
+          yourEmotion = null;
         } else {
-          existed.type = type;
           await EmotionRepository().save(existed);
-          work = 'updated';
+          updateStatus = 'updated';
+          emotionCount[existed.type as EmotionKey] = emotionCount[existed?.type as EmotionKey] - 1;
+          emotionCount[type as EmotionKey] = emotionCount[type as EmotionKey] + 1;
+          existed.type = type;
+          yourEmotion = type;
         }
       } else {
         const newEmotion = createEmotion({
@@ -77,14 +71,41 @@ class EmotionController {
           type,
           authorId: user.profile.id});
         EmotionRepository().save(newEmotion);
-        work = 'created';
+        updateStatus = 'created';
+        emotionCount[type as EmotionKey] = emotionCount[type as EmotionKey] + 1;
+        yourEmotion = type;
       }
 
-      res.json({ ok: true, message: `emotion ${work}` });
+      res.json({ ok: true, message: `emotion ${updateStatus}`, updateStatus, emotionCount, yourEmotion });
     } catch (error) {
       next(error);
     }
   };
+
+}
+
+
+const getEmotionCounter = (emotions: Emotion[], userId?: string) => {
+  const emotionCount = {
+    [EMOTION_TYPE.LOVE]: 0,
+    [EMOTION_TYPE.SAD]: 0,
+    [EMOTION_TYPE.LAUGHING]: 0,
+    [EMOTION_TYPE.ANGRY]: 0,
+  }
+  let yourEmotion = null;
+  emotions.reduce((accum, emotion) => {
+    if (emotion.type in accum) {
+      accum[emotion.type as keyof typeof EMOTION_TYPE] = accum[emotion.type  as keyof typeof EMOTION_TYPE] + 1;
+    }
+    if (emotion.authorId === userId) {
+      yourEmotion = emotion.type;
+    }
+    return accum;
+  }, emotionCount);
+  return {
+    emotionCount,
+    yourEmotion,
+  }
 }
 
 export default new EmotionController();
