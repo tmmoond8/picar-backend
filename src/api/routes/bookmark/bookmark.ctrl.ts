@@ -13,7 +13,7 @@ class BookmarkController {
     } = req;
     try {
       const bookmarks = await BookmarkRepository().list(user.profile.id);
-      res.json({ ok: true, message: 'list', bookmarks });
+      res.json({ ok: true, message: 'list', bookmarks: bookmarks.map(bookmark => bookmark.articleId) });
     } catch (error) {
       next(error);
     }
