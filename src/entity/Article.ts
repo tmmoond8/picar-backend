@@ -38,6 +38,9 @@ export default class Article {
   @Column({ default: 0})
   emotionCount!: number;
 
+  @Column({ default: false })
+  isDelete!: boolean;
+  
   @CreateDateColumn()
   createAt!: string;
 

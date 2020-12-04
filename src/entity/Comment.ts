@@ -34,6 +34,9 @@ export default class Comment {
 
   replies?: Comment[];
 
+  @Column({ default: false })
+  isDelete!: boolean;
+
   @CreateDateColumn()
   createAt!: string;
 
