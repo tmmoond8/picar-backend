@@ -22,7 +22,9 @@ class CommentController {
       const replies = Allcomments.filter(comment => comment.about);
 
       replies.forEach(reply => {
-        comments[reply.about].replies.push(reply.to());
+        if(!reply.isDelete) {
+          comments[reply.about].replies.push(reply.to());
+        }
       })
       res.json({ ok: true, message: 'list', comments: Object.values(comments) });
     } catch (error) {
