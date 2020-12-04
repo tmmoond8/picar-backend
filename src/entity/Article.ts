@@ -52,6 +52,19 @@ export default class Article {
       Object.assign({}, this, { author: this.author.profile }),
     );
   }
+  to () {
+    const copied: any = {
+      ...this,
+      author: this.author.profile
+    }
+    if (copied.isDelete) {
+      copied.content = '';
+      copied.photos = null;
+    }
+    delete copied.isDelete;
+    delete copied.authorId;
+    return copied;
+  }
 }
 
 export const ArticleRepository = () => getConnection().getRepository(Article);

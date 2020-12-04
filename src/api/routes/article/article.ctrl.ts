@@ -15,11 +15,18 @@ class ArticleController {
     } = req;
     try {
       const article = await ArticleRepository().get(id);
-      res.json({
-        ok: true,
-        message: 'get',
-        data: article,
-      });
+      if (article) {
+        res.json({
+          ok: true,
+          message: 'get',
+          data: article.to(),
+        });
+      } else {
+        res.json({
+          ok: false,
+          message: 'get',
+        });
+      }
     } catch (error) {
       next(error);
     }
@@ -36,7 +43,7 @@ class ArticleController {
     } = req;
     try {
       const articles = await ArticleRepository().list(!!group ? group.toString() : '');
-      res.json({ ok: true, message: 'list', articles });
+      res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
     } catch (error) {
       next(error);
     }
@@ -60,7 +67,7 @@ class ArticleController {
       article!.group = body.group;
       article!.photos = body.photos;
       await ArticleRepository().save(article);
-      res.json({ ok: true, message: 'write', article });
+      res.json({ ok: true, message: 'write', article: article.to() });
     } catch (error) {
       next(error);
     }
