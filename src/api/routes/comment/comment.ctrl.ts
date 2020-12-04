@@ -57,6 +57,41 @@ class CommentController {
       next(error);
     }
   };
+  
+  public remove = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const {
+      body: { user },
+      params: { commentId },
+    } = req;
+    try {
+      const comment = await CommentRepository().get(commentId);
+      if (comment) {
+        if (user.profile.id === comment.authorId)  {
+          await CommentRepository().remove(commentId);
+          res.json({
+            ok: true,
+            message: 'removed',
+          });
+        } else {
+          res.json({
+            ok: false,
+            message: 'not authorized',
+          });
+        }
+      } else {
+        res.json({
+          ok: false,
+          message: 'not found',
+        });
+      }
+    } catch(error) {
+      next(error);
+    }
+  }
 }
 
 export default new CommentController();

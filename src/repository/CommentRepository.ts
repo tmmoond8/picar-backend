@@ -28,9 +28,9 @@ class ArticleRepository {
       throw Error('database not connected !!!');
     } else {
       return this.reposition
-        .createQueryBuilder('article')
-        .leftJoinAndSelect('article.author', 'user')
-        .where('article.id = :id', { id: parseInt(id) })
+        .createQueryBuilder('comment')
+        .leftJoinAndSelect('comment.author', 'user')
+        .where('comment.id = :id', { id })
         .getOne();
     }
   }
@@ -39,6 +39,18 @@ class ArticleRepository {
       throw Error('database not connected !!!');
     } else {
       return this.reposition.save(comment);
+    }
+  }
+
+  remove(commentId: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      this.reposition.createQueryBuilder()
+        .update(Comment)
+        .set({ isDelete: true })
+        .where('comment.id = :commentId', { commentId })
+        .execute();
     }
   }
 }

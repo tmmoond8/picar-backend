@@ -7,4 +7,5 @@ export default (app: Router) => {
   app.use('/comment', route);
   route.get('/list/:articleId', commentContoller.list);
   route.post('/write', commentContoller.write);
+  route.delete('/remove/:commentId', commentContoller.remove);
 };
