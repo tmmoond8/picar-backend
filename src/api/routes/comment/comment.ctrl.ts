@@ -1,8 +1,8 @@
 import express from 'express';
 import { getConnection } from 'typeorm';
 import User from '../../../entity/User';
-import Comment, { CommentRepository } from '../../../entity/Comment';
 import ArticleRepository from '../../../repository/ArticleRepository';
+import CommentRepository from '../../../repository/CommentRepository';
 
 class CommentController {
   public list = async (
@@ -14,13 +14,7 @@ class CommentController {
       params: { articleId },
     } = req;
     try {
-      const Allcomments = await CommentRepository()
-        .createQueryBuilder('comment')
-        .leftJoinAndSelect('comment.author', 'user')
-        .where('comment.articleId = :articleId', { articleId })
-        .orderBy("comment.createAt", "ASC")
-        .getMany();
-
+      const Allcomments = await CommentRepository().list(articleId);
       const comments = Allcomments.filter(comment => !comment.about).reduce((accum: any, comment) => {
         accum[comment.id] = { ...comment.to(), replies: []};
         return accum;
@@ -53,7 +47,7 @@ class CommentController {
       } else {
         comment!.replies = [];
       }
-      await getConnection().getRepository(Comment).save(comment);
+      await CommentRepository().save(comment);
       if (!body.about) {
         console.log('up', body.articleId)
         await ArticleRepository().increaseComment(body.articleId);
