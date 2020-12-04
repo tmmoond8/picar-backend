@@ -83,7 +83,10 @@ export default class User {
 
   public get generateToken(): any {
     return generateToken({
-      profile: this.profile
+      profile: {
+        ...this.profile,
+        id: this.id
+      }
     })
   }
 }

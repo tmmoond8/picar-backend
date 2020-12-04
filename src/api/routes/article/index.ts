@@ -10,4 +10,5 @@ export default (app: Router) => {
   route.get('/list', articleContoller.list);
   route.post('/write', articleContoller.write);
   route.get('/:id', testMiddleware, articleContoller.get);
+  route.delete('/remove/:id', testMiddleware, articleContoller.remove);
 };

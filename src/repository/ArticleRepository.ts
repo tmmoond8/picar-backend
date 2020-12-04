@@ -41,6 +41,19 @@ class ArticleRepository {
       return this.reposition?.save(article);
     }
   }
+
+  remove(articleId: number) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      this.reposition.createQueryBuilder()
+        .update(Article)
+        .set({ isDelete: true })
+        .where('article.id = :articleId', { articleId })
+        .execute();
+    }
+  }
+
   increaseComment(articleId: number) {
     if (!this.reposition) {
       throw Error('database not connected !!!');

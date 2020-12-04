@@ -61,7 +61,6 @@ export default class Article {
       copied.content = '';
       copied.photos = null;
     }
-    delete copied.isDelete;
     delete copied.authorId;
     return copied;
   }

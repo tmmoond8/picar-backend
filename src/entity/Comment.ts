@@ -48,7 +48,6 @@ export default class Comment {
     if (this.isDelete) {
       copied.content = '';
     }
-    delete copied.isDelete;
     delete copied.authorId;
     return copied;
   }

@@ -74,6 +74,43 @@ class ArticleController {
 
     res.json({ ok: true, message: 'write' });
   };
+
+  public remove = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const {
+      body: { user },
+      params: { id },
+    } = req;
+    try {
+      const article = await ArticleRepository().get(id);
+      if (article) {
+        console.log(user.profile);
+        console.log(article.authorId);
+        if (user.profile.id === article.authorId)  {
+          await ArticleRepository().remove(parseInt(id));
+          res.json({
+            ok: true,
+            message: 'removed',
+          });
+        } else {
+          res.json({
+            ok: false,
+            message: 'not authorized',
+          });
+        }
+      } else {
+        res.json({
+          ok: false,
+          message: 'not found',
+        });
+      }
+    } catch(error) {
+      next(error);
+    }
+  }
 }
 
 export default new ArticleController();
