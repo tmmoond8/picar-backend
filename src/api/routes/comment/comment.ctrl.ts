@@ -48,7 +48,11 @@ class CommentController {
         .findOne({ code: body.user.profile.code });
       const comment = user!.createComment(body.articleId);
       comment!.content = body.content;
-      comment!.about = body.about || null;
+      if (body.about) {
+        comment!.about = body.about || null;
+      } else {
+        comment!.replies = [];
+      }
       await getConnection().getRepository(Comment).save(comment);
       if (!!body.about) {
         await ArticleRepository().increaseComment(body.articleId);
