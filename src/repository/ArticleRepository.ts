@@ -41,25 +41,25 @@ class ArticleRepository {
       return this.reposition?.save(article);
     }
   }
-  increaseComment(id: number) {
+  increaseComment(articleId: number) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
       return this.reposition.createQueryBuilder()
         .update(Article)
         .set({ commentCount: () => "commentCount + 1"})
-        .where('article.id = :articleId', { articleId: 67 })
+        .where('article.id = :articleId', { articleId })
         .execute();
     }
   }
-  decreaseComment(id: number) {
+  decreaseComment(articleId: number) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
       return this.reposition.createQueryBuilder()
         .update(Article)
         .set({ commentCount: () => "commentCount - 1"})
-        .where('article.id = :articleId', { articleId: 67 })
+        .where('article.id = :articleId', { articleId })
         .execute();
     }
   }

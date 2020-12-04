@@ -44,6 +44,7 @@
   },
   "scripts": {
     "build": "yarn clean & tsc",
+    "reload": "yarn build & pm2 reload owner-api",
     "start": "NODE_ENV=production pm2 start dist/app.js -i 0 --name owner-api",
     "stop": "pm2 kill",
     "restart": "yarn stop & yarn start",

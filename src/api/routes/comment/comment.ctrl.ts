@@ -54,7 +54,8 @@ class CommentController {
         comment!.replies = [];
       }
       await getConnection().getRepository(Comment).save(comment);
-      if (!!body.about) {
+      if (!body.about) {
+        console.log('up', body.articleId)
         await ArticleRepository().increaseComment(body.articleId);
       }
       res.json({ ok: true, message: 'write', comment });
