@@ -22,13 +22,13 @@ class CommentController {
         .getMany();
 
       const comments = Allcomments.filter(comment => !comment.about).reduce((accum: any, comment) => {
-        accum[comment.id] = { ...comment, replies: []};
+        accum[comment.id] = { ...comment.to(), replies: []};
         return accum;
       }, {})
       const replies = Allcomments.filter(comment => comment.about);
 
       replies.forEach(reply => {
-        comments[reply.about].replies.push(reply);
+        comments[reply.about].replies.push(reply.to());
       })
       res.json({ ok: true, message: 'list', comments: Object.values(comments) });
     } catch (error) {
@@ -58,7 +58,7 @@ class CommentController {
         console.log('up', body.articleId)
         await ArticleRepository().increaseComment(body.articleId);
       }
-      res.json({ ok: true, message: 'write', comment });
+      res.json({ ok: true, message: 'write', comment: comment.to() });
     } catch (error) {
       next(error);
     }

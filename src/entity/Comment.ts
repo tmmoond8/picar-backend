@@ -42,6 +42,16 @@ export default class Comment {
 
   @UpdateDateColumn()
   updateAt!: string;
+
+  to () {
+    const copied: any = { ...this, author: this.author.profile };
+    if (this.isDelete) {
+      copied.content = '';
+    }
+    delete copied.isDelete;
+    delete copied.authorId;
+    return copied;
+  }
 }
 
 export const CommentRepository = () => getConnection().getRepository(Comment);
