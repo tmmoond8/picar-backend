@@ -11,7 +11,7 @@ class ArticleRepository {
     this.reposition = getConnection().getRepository(Article);
   }
 
-  list(group: string) {
+  list(group?: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {

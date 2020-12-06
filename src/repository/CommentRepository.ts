@@ -11,6 +11,18 @@ class ArticleRepository {
     this.reposition = getConnection().getRepository(Comment);
   }
 
+  all() {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.author', 'user')
+      .orderBy("comment.createAt", "ASC")
+      .getMany();
+    }
+  }
+
   list(articleId: number | string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');

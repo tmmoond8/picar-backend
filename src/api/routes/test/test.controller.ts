@@ -1,6 +1,6 @@
 import express from 'express';
-import Article from '../../../entity/Article'
-import { ArticleRepository } from '../../../entity/Article';
+import ArticleRepository from '../../../repository/ArticleRepository';
+import CommentRepository from '../../../repository/CommentRepository';
 
 class TestController {
   public getTest = async (
@@ -8,29 +8,22 @@ class TestController {
     res: express.Response,
     next: express.NextFunction
   ) => {
+      
     try {
-      const article = await ArticleRepository()
-      .createQueryBuilder('article')
-      .where('article.id = :articleId', { articleId: 67 })
-      .getOne();
-      console.log(article?.commentCount);
+      const comments = await CommentRepository().all();
+      const commentCounts = comments.reduce((accum, comment) => {
+        if (comment.about) return accum;
+        accum[comment.articleId.toString()] = (accum[comment.articleId.toString()] || 0) + 1;
+        return accum;
+      }, {} as any)
+      const articles = await ArticleRepository().list()
+      articles.forEach(article => {
+        if (article.id in commentCounts) {
+          article.commentCount = commentCounts[article.id];
+          ArticleRepository().save(article);
+        }
+      })
       
-      await ArticleRepository()
-        .createQueryBuilder()
-        .update(Article)
-        .set({ commentCount: () => "commentCount + 1"})
-        .where('article.id = :articleId', { articleId: 67 })
-        .execute();
-        
-    // .where("id = :id", { id: 1 })
-
-      
-      // if (article) {
-      //   article.commentCount = article.commentCount + 1;
-      //   await ArticleRepository().save(article, {
-      //     transaction: false,
-      //   })
-      // }
     } catch (error) {
 
     }
