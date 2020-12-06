@@ -51,6 +51,7 @@ class CommentController {
       }
       await CommentRepository().save(comment);
       if (!body.about) {
+        console.log('up', body.articleId)
         await ArticleRepository().increaseComment(body.articleId);
       }
       res.json({ ok: true, message: 'write', comment: comment.to() });
