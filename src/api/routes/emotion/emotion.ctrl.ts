@@ -1,6 +1,7 @@
 import express from 'express';
 import EmotionRepository from '../../../repository/EmotionRepository';
 import Emotion, { createEmotion } from '../../../entity/Emotion';
+import ArticleRepository from '../../../repository/ArticleRepository';
 
 const EMOTION_TYPE = {
   LOVE: 'LOVE',
@@ -54,6 +55,7 @@ class EmotionController {
       if (existed) {
         if (existed.type === type) {
           await EmotionRepository().remove(existed);
+          await ArticleRepository().decreaseEmotion(articleId);
           updateStatus = 'removed';
           emotionCount[existed?.type as EmotionKey] = emotionCount[existed?.type as EmotionKey] - 1;
           yourEmotion = null;
@@ -70,7 +72,8 @@ class EmotionController {
           articleId,
           type,
           authorId: user.profile.id});
-        EmotionRepository().save(newEmotion);
+        await EmotionRepository().save(newEmotion);
+        await ArticleRepository().increaseEmotion(articleId);
         updateStatus = 'created';
         emotionCount[type as EmotionKey] = emotionCount[type as EmotionKey] + 1;
         yourEmotion = type;

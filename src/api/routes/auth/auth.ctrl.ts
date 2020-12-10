@@ -69,7 +69,6 @@ class AuthController {
     const {
       query,
     } = req;
-    console.log(query);
     return res.json(query);
   };
 }

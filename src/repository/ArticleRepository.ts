@@ -11,7 +11,7 @@ class ArticleRepository {
     this.reposition = getConnection().getRepository(Article);
   }
 
-  list(group: string) {
+  list(group?: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
@@ -72,6 +72,28 @@ class ArticleRepository {
       return this.reposition.createQueryBuilder()
         .update(Article)
         .set({ commentCount: () => "commentCount - 1"})
+        .where('article.id = :articleId', { articleId })
+        .execute();
+    }
+  }
+  increaseEmotion(articleId: number) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition.createQueryBuilder()
+        .update(Article)
+        .set({ emotionCount: () => "emotionCount + 1"})
+        .where('article.id = :articleId', { articleId })
+        .execute();
+    }
+  }
+  decreaseEmotion(articleId: number) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition.createQueryBuilder()
+        .update(Article)
+        .set({ emotionCount: () => "emotionCount - 1"})
         .where('article.id = :articleId', { articleId })
         .execute();
     }

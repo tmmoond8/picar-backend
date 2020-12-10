@@ -87,8 +87,6 @@ class ArticleController {
     try {
       const article = await ArticleRepository().get(id);
       if (article) {
-        console.log(user.profile);
-        console.log(article.authorId);
         if (user.profile.id === article.authorId)  {
           await ArticleRepository().remove(parseInt(id));
           res.json({
