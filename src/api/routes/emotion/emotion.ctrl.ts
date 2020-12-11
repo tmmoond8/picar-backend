@@ -50,7 +50,7 @@ class EmotionController {
       }
       const emotionList = await EmotionRepository().list(userId);
       const emotions = emotionList.reduce((accum, emotion) => {
-        (accum as Record<string, boolean>)[emotion.articleId] = true;
+        (accum as Record<string, string>)[emotion.articleId] = emotion.type;
         return accum;
       }, {})
       res.json({ ok: true, message: 'list', emotions });
