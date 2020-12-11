@@ -11,14 +11,14 @@ class ArticleRepository {
     this.reposition = getConnection().getRepository(Comment);
   }
 
-  list(articleId: number | string) {
+  list(params: {articleId?: number | string, userId?: string}) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
       return this.reposition
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.author', 'user')
-      .where('comment.articleId = :articleId', { articleId })
+      .where(params.articleId ? 'comment.articleId = :articleId' : 'comment.authorId = :userId', params)
       .orderBy("comment.createAt", "ASC")
       .getMany();
     }

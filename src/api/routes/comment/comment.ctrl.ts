@@ -3,6 +3,7 @@ import { getConnection } from 'typeorm';
 import User from '../../../entity/User';
 import ArticleRepository from '../../../repository/ArticleRepository';
 import CommentRepository from '../../../repository/CommentRepository';
+import UserRepository from '../../../repository/UserRepository';
 
 class CommentController {
   public list = async (
@@ -14,7 +15,7 @@ class CommentController {
       params: { articleId },
     } = req;
     try {
-      const allcomments = await CommentRepository().list(articleId);
+      const allcomments = await CommentRepository().list({articleId});
       const comments = allcomments.filter(comment => !comment.about).reduce((accum: any, comment) => {
         accum[comment.id] = { ...comment.to(), replies: []};
         return accum;
@@ -27,6 +28,35 @@ class CommentController {
         }
       })
       res.json({ ok: true, message: 'list', comments: Object.values(comments) });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getUserComments = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const {
+      params: { userCode },
+      body: { user }
+    } = req;
+    try {
+      let userId = user?.profile.id;
+      if (userCode) {
+        const targetUser = await UserRepository().getByCode(userCode);
+        userId = targetUser?.id;
+      }
+      const allComments = await CommentRepository().list({userId});
+      const userComments = allComments.reduce((accum: Record<string, any[]>, comment) => {
+        if (!(comment.articleId in accum)) {
+          accum[comment.articleId] = [];
+        }
+        accum[comment.articleId].push(comment.to());
+        return accum;
+      }, {})
+      res.json({ ok: true, message: 'getUserComments', userComments });
     } catch (error) {
       next(error);
     }
