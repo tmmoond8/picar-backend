@@ -14,15 +14,15 @@ class CommentController {
       params: { articleId },
     } = req;
     try {
-      const Allcomments = await CommentRepository().list(articleId);
-      const comments = Allcomments.filter(comment => !comment.about).reduce((accum: any, comment) => {
+      const allcomments = await CommentRepository().list(articleId);
+      const comments = allcomments.filter(comment => !comment.about).reduce((accum: any, comment) => {
         accum[comment.id] = { ...comment.to(), replies: []};
         return accum;
       }, {})
-      const replies = Allcomments.filter(comment => comment.about);
+      const replies = allcomments.filter(comment => comment.about);
 
       replies.forEach(reply => {
-        if(!reply.isDelete) {
+        if(!reply.isDelete && reply.about in comments) {
           comments[reply.about].replies.push(reply.to());
         }
       })
