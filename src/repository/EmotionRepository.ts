@@ -10,13 +10,24 @@ class EmotionRepository {
     this.reposition = getConnection().getRepository(Emotion);
   }
 
-  list(articleId: string) {
+  get(articleId: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
       return this.reposition
         .createQueryBuilder('emotion')
         .where(articleId ? 'emotion.articleId = :articleId' : '1=1', { articleId })
+        .getMany();
+    }
+  }
+
+  list(userId: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+        .createQueryBuilder('emotion')
+        .where('emotion.authorId = :userId', { userId })
         .getMany();
     }
   }

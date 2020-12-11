@@ -2,6 +2,7 @@ import express from 'express';
 import EmotionRepository from '../../../repository/EmotionRepository';
 import Emotion, { createEmotion } from '../../../entity/Emotion';
 import ArticleRepository from '../../../repository/ArticleRepository';
+import UserRepository from '../../../repository/UserRepository';
 
 const EMOTION_TYPE = {
   LOVE: 'LOVE',
@@ -13,7 +14,8 @@ const EMOTION_TYPE = {
 type EmotionKey = keyof typeof EMOTION_TYPE;
 
 class EmotionController {
-  public list = async (
+
+  public get = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
@@ -23,9 +25,35 @@ class EmotionController {
       body: { user },
     } = req;
     try {
-      const emotions = await EmotionRepository().list(articleId);
+      const emotions = await EmotionRepository().get(articleId);
       const { emotionCount, yourEmotion}  = getEmotionCounter(emotions, user?.profile?.id);
       res.json({ ok: true, message: 'list', emotionCount, yourEmotion, });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public list = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const {
+      params: { userCode },
+      body: { user },
+    } = req;
+    try {
+      let userId = user?.profile.id;
+      if (userCode) {
+        const targetUser = await UserRepository().getByCode(userCode);
+        userId = targetUser?.id;
+      }
+      const emotionList = await EmotionRepository().list(userId);
+      const emotions = emotionList.reduce((accum, emotion) => {
+        (accum as Record<string, boolean>)[emotion.articleId] = true;
+        return accum;
+      }, {})
+      res.json({ ok: true, message: 'list', emotions });
     } catch (error) {
       next(error);
     }

@@ -1,6 +1,7 @@
 import express from 'express';
 import { getConnection } from 'typeorm';
 import Joi from 'joi';
+import UserRepository from '../../../repository/UserRepository';
 import User, { createUser } from '../../../entity/User';
 import { setCookie } from '../../../lib/token';
 
@@ -23,7 +24,7 @@ class AuthController {
     next: express.NextFunction,
   ) => {
     const { query: { snsId, provider} } = req;
-    let user = await getConnection().getRepository(User).findOne({ where: { snsId, provider } });
+    let user = await UserRepository().get(snsId as string, provider as string);
     if (user) {
       const token = await user.generateToken;
       setCookie(req, res, token);
@@ -42,6 +43,7 @@ class AuthController {
     const {
       body,
     } = req;
+    console.log()
     const validation = validateLoginProfile(body);
     if (validation.error) {
       return next(validation.error);
@@ -58,18 +60,6 @@ class AuthController {
     } catch (error) {
       return next(error);
     }
-  };
-
-  // Kakao 체크
-  public kakaoCheck = async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction
-  ) => {
-    const {
-      query,
-    } = req;
-    return res.json(query);
   };
 }
 
