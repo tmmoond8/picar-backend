@@ -5,8 +5,8 @@ const route = Router();
 
 export default (app: Router) => {
   app.use('/emotion', route);
-  route.get('/list', emotionContoller.list);
+  route.get('/user/:userCode', emotionContoller.getUserEmotions);
+  route.get('/user', emotionContoller.getUserEmotions);
   route.get('/:articleId', emotionContoller.get);
-  route.get('/list/:userCode', emotionContoller.list);
   route.post('/', emotionContoller.cud);
 };

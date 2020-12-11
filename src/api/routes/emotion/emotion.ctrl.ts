@@ -33,7 +33,7 @@ class EmotionController {
     }
   };
 
-  public list = async (
+  public getUserEmotions = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
@@ -53,7 +53,7 @@ class EmotionController {
         (accum as Record<string, string>)[emotion.articleId] = emotion.type;
         return accum;
       }, {})
-      res.json({ ok: true, message: 'list', emotions });
+      res.json({ ok: true, message: 'getUserEmotions', emotions });
     } catch (error) {
       next(error);
     }
