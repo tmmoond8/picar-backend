@@ -19,7 +19,7 @@ class ArticleRepository {
       .createQueryBuilder('comment')
       .leftJoinAndSelect('comment.author', 'user')
       .where(params.articleId ? 'comment.articleId = :articleId' : 'comment.authorId = :userId', params)
-      .orderBy("comment.createAt", "ASC")
+      .orderBy("comment.createAt", "DESC")
       .getMany();
     }
   }
