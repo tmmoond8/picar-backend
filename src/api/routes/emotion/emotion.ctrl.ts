@@ -44,16 +44,20 @@ class EmotionController {
     } = req;
     try {
       let userId = user?.profile.id;
+      let targetUserCode = user?.profile.code;
       if (userCode) {
         const targetUser = await UserRepository().getByCode(userCode);
         userId = targetUser?.id;
+        targetUserCode = userCode;
       }
-      const emotionList = await EmotionRepository().list(userId);
-      const emotions = emotionList.reduce((accum, emotion) => {
-        (accum as Record<string, string>)[emotion.articleId] = emotion.type;
-        return accum;
-      }, {})
-      res.json({ ok: true, message: 'getUserEmotions', emotions });
+      const emotions = await EmotionRepository().list(userId);
+      res.json({ 
+        ok: true, 
+        message: 'getUserEmotions', 
+        emotions: emotions.map(
+          ({ id, articleId, type}) => ({ id, articleId, type, userCode: targetUserCode })
+        ) 
+      });
     } catch (error) {
       next(error);
     }
@@ -85,12 +89,10 @@ class EmotionController {
           await EmotionRepository().remove(existed);
           await ArticleRepository().decreaseEmotion(articleId);
           updateStatus = 'removed';
-          emotionCount[existed?.type as EmotionKey] = emotionCount[existed?.type as EmotionKey] - 1;
           yourEmotion = null;
         } else {
           await EmotionRepository().save(existed);
           updateStatus = 'updated';
-          emotionCount[existed.type as EmotionKey] = emotionCount[existed?.type as EmotionKey] - 1;
           emotionCount[type as EmotionKey] = emotionCount[type as EmotionKey] + 1;
           existed.type = type;
           yourEmotion = type;

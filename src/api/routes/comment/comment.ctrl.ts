@@ -48,15 +48,12 @@ class CommentController {
         const targetUser = await UserRepository().getByCode(userCode);
         userId = targetUser?.id;
       }
-      const allComments = await CommentRepository().list({userId});
-      const userComments = allComments.reduce((accum: Record<string, any[]>, comment) => {
-        if (!(comment.articleId in accum)) {
-          accum[comment.articleId] = [];
-        }
-        accum[comment.articleId].push(comment.to());
-        return accum;
-      }, {})
-      res.json({ ok: true, message: 'getUserComments', userComments });
+      const userComments = await CommentRepository().list({userId});
+      res.json({ 
+        ok: true, 
+        message: 'getUserComments', 
+        userComments: userComments.map(comment => comment.to()) 
+      });
     } catch (error) {
       next(error);
     }

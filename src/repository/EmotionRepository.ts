@@ -17,6 +17,7 @@ class EmotionRepository {
       return this.reposition
         .createQueryBuilder('emotion')
         .where(articleId ? 'emotion.articleId = :articleId' : '1=1', { articleId })
+        .orderBy("emotion.createAt", "DESC")
         .getMany();
     }
   }
@@ -28,6 +29,7 @@ class EmotionRepository {
       return this.reposition
         .createQueryBuilder('emotion')
         .where('emotion.authorId = :userId', { userId })
+        .orderBy("emotion.createAt", "DESC")
         .getMany();
     }
   }
