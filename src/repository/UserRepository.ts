@@ -25,6 +25,14 @@ class UserRepository {
       return this.reposition.findOne({ where: { code } });
     }
   }
+
+  save(user: User) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      this.reposition.save(user);
+    }
+  }
 }
 
 let repository: UserRepository | null = null;

@@ -5,6 +5,7 @@ import comment from './comment';
 import auth from './auth';
 import emotion from './emotion';
 import bookmark from './bookmark';
+import user from './user';
 
 export default (app: Router) => {
   test(app);
@@ -13,4 +14,5 @@ export default (app: Router) => {
   comment(app);
   emotion(app);
   bookmark(app);
+  user(app);
 };
