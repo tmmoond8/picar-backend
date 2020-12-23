@@ -1,5 +1,6 @@
 import express from 'express';
 import UserRepository from '../../../repository/UserRepository';
+import { setCookie } from '../../../lib/token';
 import Joi from 'joi';
 
 class UserController {
@@ -28,10 +29,13 @@ class UserController {
         const user = await UserRepository().getByCode(body.user?.profile.code);
         if (user) {
           user.name = modificationData.name;
+          user.thumbnail = modificationData.profileImage;
           user.profileImage = modificationData.profileImage;
           user.group = modificationData.group;
           user.description = modificationData.description;
           await UserRepository().save(user);
+          const token = await user.generateToken;
+          setCookie(req, res, token);
         }
       }
       res.json({ ok: true, message: `user updated`, modificationData });
