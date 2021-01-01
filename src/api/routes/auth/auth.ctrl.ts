@@ -1,5 +1,6 @@
 import express from 'express';
 import { getConnection } from 'typeorm';
+import axios from 'axios';
 import Joi from 'joi';
 import UserRepository from '../../../repository/UserRepository';
 import User, { createUser } from '../../../entity/User';
@@ -34,8 +35,32 @@ class AuthController {
     }
   };
 
-  // Kakao 로그인
+  // kakao 로그인
   public kakaoLogin = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { accessToken, refreshToken } = req.body;
+    const { data } = await axios.get('https://kapi.kakao.com/v2/user/me', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    const user = await UserRepository().get(data.id.toString(), 'kakao');
+    if (user) {
+      user.accessToken = accessToken;
+      user.refreshToken = refreshToken;
+      await UserRepository().save(user);
+      const token = await user.generateToken;
+      setCookie(req, res, token);
+      return res.json(user.profile);
+    }
+    return res.json(data);
+  }
+
+  // Kakao 회원가입
+  public kakaoSignUp = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction
@@ -43,7 +68,6 @@ class AuthController {
     const {
       body,
     } = req;
-    console.log()
     const validation = validateLoginProfile(body);
     if (validation.error) {
       return next(validation.error);

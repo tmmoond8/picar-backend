@@ -41,6 +41,12 @@ export default class User {
   @Column()
   snsId!: string;
 
+  @Column()
+  accessToken!: string;
+  
+  @Column()
+  refreshToken!: string;
+
   @Column({ nullable: true })
   description?: string;
 
