@@ -2,9 +2,15 @@ import express from 'express';
 import { getConnection } from 'typeorm';
 import axios from 'axios';
 import Joi from 'joi';
+import LruChache from 'lru-cache';
 import UserRepository from '../../../repository/UserRepository';
 import User, { createUser } from '../../../entity/User';
-import { setCookie } from '../../../lib/token';
+import { setCookie } from '../../../lib/token';''
+
+const cache = new LruChache<string, any>({
+  max: 1000,
+  maxAge: 1000 * 60 * 60 * 3,
+})
 
 class AuthController {
   public getUser = async (
@@ -35,13 +41,31 @@ class AuthController {
     }
   };
 
+  public checkUUID = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { query: { uuid } } = req;
+    console.log(cache.dump());
+    const user = cache.get(uuid?.toString() ?? '');
+    if (user) {
+      const token = await user.generateToken;
+      setCookie(req, res, token);
+      cache.set(uuid?.toString() ?? '', null);
+      res.json({ ok: true, message: `found`, data: user.profile });
+    } else {
+      res.json({ ok: true, message: `not found`, data: null });
+    }
+  };
+
   // kakao 로그인
   public kakaoLogin = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { accessToken, refreshToken } = req.body;
+    const { accessToken, refreshToken, uuid } = req.body;
     const { data } = await axios.get('https://kapi.kakao.com/v2/user/me', {
       headers: {
         Authorization: `Bearer ${accessToken}`
@@ -54,6 +78,7 @@ class AuthController {
       await UserRepository().save(user);
       const token = await user.generateToken;
       setCookie(req, res, token);
+      cache.set(uuid, user);
       return res.json(user.profile);
     }
     return res.json(data);

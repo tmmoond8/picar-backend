@@ -9,6 +9,7 @@ export default (app: Router) => {
 
   route.get('/getUser', testMiddleware, articleContoller.getUser);
   route.get('/check', articleContoller.check);
+  route.get('/checkUUID', articleContoller.checkUUID);
   route.post('/login/kakao', articleContoller.kakaoLogin);
   route.post('/signUp/kakao', articleContoller.kakaoSignUp);
 };
