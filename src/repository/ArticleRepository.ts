@@ -19,6 +19,7 @@ class ArticleRepository {
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.author', 'user')
         .where(group ? 'article.group = :group' : '1=1', { group })
+        .andWhere('article.isDelete = :isDelete', { isDelete: false })
         .orderBy("article.createAt", "DESC")
         .getMany();
     }
