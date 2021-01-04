@@ -9,6 +9,7 @@ export default (app: Router) => {
 
   route.get('/list', articleContoller.list);
   route.post('/write', articleContoller.write);
+  route.put('/update/:articleId', articleContoller.update);
   route.get('/:id', testMiddleware, articleContoller.get);
-  route.delete('/remove/:id', testMiddleware, articleContoller.remove);
+  route.delete('/remove/:articleId', testMiddleware, articleContoller.remove);
 };

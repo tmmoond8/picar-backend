@@ -75,6 +75,47 @@ class ArticleController {
     res.json({ ok: true, message: 'write' });
   };
 
+
+  public update = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const {
+      body: { user, title, content, group, photos },
+      params: { articleId },
+    } = req;
+    try {
+      const article = await ArticleRepository().get(articleId);
+      if (article) {
+        if (user.profile.id === article.authorId)  {
+          article.title = title;
+          article.content = content;
+          article.group = group;
+          article.photos = photos;
+          await ArticleRepository().save(article);
+          res.json({
+            ok: true,
+            message: 'updated',
+            article: article.to()
+          });
+        } else {
+          res.json({
+            ok: false,
+            message: 'not authorized',
+          });
+        }
+      } else {
+        res.json({
+          ok: false,
+          message: 'not found',
+        });
+      }
+    } catch(error) {
+      next(error);
+    }
+  };
+
   public remove = async (
     req: express.Request,
     res: express.Response,
@@ -82,13 +123,13 @@ class ArticleController {
   ) => {
     const {
       body: { user },
-      params: { id },
+      params: { articleId },
     } = req;
     try {
-      const article = await ArticleRepository().get(id);
+      const article = await ArticleRepository().get(articleId);
       if (article) {
         if (user.profile.id === article.authorId)  {
-          await ArticleRepository().remove(parseInt(id));
+          await ArticleRepository().remove(parseInt(articleId));
           res.json({
             ok: true,
             message: 'removed',
