@@ -6,5 +6,6 @@ const route = Router();
 export default (app: Router) => {
   app.use('/user', route);
 
+  route.get('/search', UserController.search)
   route.put('/modify', UserController.updateUser);
 };

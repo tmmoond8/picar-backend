@@ -4,6 +4,25 @@ import { setCookie } from '../../../lib/token';
 import Joi from 'joi';
 
 class UserController {
+
+  public search = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    const {
+      query,
+    } = req;
+
+    try {
+      const users = await UserRepository().search(query)
+      return res.json({ ok: true, message: 'search', users }); 
+    } catch (error) {
+      next(error);
+    }
+    return res.json({ ok: false, message: 'search' }); 
+  }
+
   public updateUser = async (
     req: express.Request,
     res: express.Response,
@@ -43,7 +62,7 @@ class UserController {
       next(error);
     }
        
-    res.json({ ok: true, message: 'update User' });
+    return res.json({ ok: true, message: 'update User' });
   };
 }
 

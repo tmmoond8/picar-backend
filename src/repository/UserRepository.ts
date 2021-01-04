@@ -10,6 +10,17 @@ class UserRepository {
     this.reposition = getConnection().getRepository(User);
   }
 
+  search(options: { search?: string }) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+        .createQueryBuilder('user')
+        .where(options.search ? 'user.name like :search' : '1=1', { search: `%${options.search}%`})
+        .getMany();
+    }
+  }
+
   get(snsId: string, provider: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
