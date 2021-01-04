@@ -23,6 +23,18 @@ class ArticleRepository {
       .getMany();
     }
   }
+
+  listAll(startAt?: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+      .createQueryBuilder('comment')
+      .where(startAt ? 'comment.createAt > :startAt' : '1=1', { startAt })
+      .getMany();
+    }
+  }
+
   get(id: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');

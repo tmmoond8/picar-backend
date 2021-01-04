@@ -1,7 +1,11 @@
 import express from 'express';
 import { getConnection } from 'typeorm';
+import { add } from 'date-fns';
 import User from '../../../entity/User';
 import ArticleRepository from '../../../repository/ArticleRepository';
+import CommentRepository from '../../../repository/CommentRepository';
+import EmotionRepository from '../../../repository/EmotionRepository';
+import BookmarkRepository from '../../../repository/BookmarkRepository';
 
 class ArticleController {
 
@@ -39,16 +43,84 @@ class ArticleController {
     next: express.NextFunction,
   ) => {
     const {
-      query: { group },
+      query,
     } = req;
     try {
-      const articles = await ArticleRepository().list(!!group ? group.toString() : '');
+      const articles = await ArticleRepository().list(query);
       res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
     } catch (error) {
       next(error);
     }
 
     res.json({ ok: true, message: 'list' });
+  };
+
+  public listPopular = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const COUNTER = {
+      COMMENT: 1,
+      EMOTION: 1,
+      BOOKMARK: 3,
+    }
+    try {
+      const startAt = add(new Date(), { days: -7 }).toISOString();
+      const articlesPromise = ArticleRepository().list({ startAt });
+      const commentsPromise = CommentRepository().listAll(startAt);
+      const emotionsPromise = EmotionRepository().listAll(startAt);
+      const bookmarksPromise = BookmarkRepository().listAll(startAt);
+
+      const articles = await articlesPromise;
+      const comments = await commentsPromise;
+      const emotions = await emotionsPromise;
+      const bookmarks = await bookmarksPromise;
+
+      const counterMap = new Map<number, number>()
+
+      comments.forEach(comment => {
+        counterMap.set(comment.articleId, (counterMap.get(comment.articleId) ?? 0) + COUNTER.COMMENT);
+      });
+
+      emotions.forEach(emotion => {
+        counterMap.set(emotion.articleId, (counterMap.get(emotion.articleId) ?? 0) + COUNTER.EMOTION);
+      })
+
+      bookmarks.forEach(bookmark => {
+        counterMap.set(bookmark.articleId, (counterMap.get(bookmark.articleId) ?? 0) + COUNTER.BOOKMARK);
+      })
+
+      const counter = Array.from(counterMap);
+      counter.sort(([_, a], [__, b]) => a < b ? 1 : -1);
+      const popArticles = counter.map(([articleId, value]) => {
+        return (articles.find((article) => article.id === articleId))?.to()
+      })
+
+      return res.json({ ok: true, message: 'list', articles: popArticles });
+    } catch (error) {
+      next(error);
+    }
+
+    return res.json({ ok: false, message: 'list' });
+  };
+
+  public search = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const {
+      query,
+    } = req;
+    try {
+      const articles = await ArticleRepository().search(query);
+      return res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
+    } catch (error) {
+      next(error);
+    }
+
+    return res.json({ ok: false, message: 'list' });
   };
 
   public write = async (
@@ -74,7 +146,6 @@ class ArticleController {
 
     res.json({ ok: true, message: 'write' });
   };
-
 
   public update = async (
     req: express.Request,

@@ -22,6 +22,17 @@ class EmotionRepository {
     }
   }
 
+  listAll(startAt?: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+        .createQueryBuilder('emotion')
+        .where(startAt ? 'emotion.createAt > :startAt' : '1=1', { startAt })
+        .getMany();
+    }
+  }
+
   list(userId: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');

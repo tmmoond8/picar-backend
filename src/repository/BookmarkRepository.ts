@@ -21,6 +21,17 @@ class BookmarkRepository {
     }
   }
 
+  listAll(startAt?: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+        .createQueryBuilder('bookmark')
+        .where(startAt ? 'bookmark.createAt > :startAt' : '1=1', { startAt })
+        .getMany();
+    }
+  }
+
   get(userId: string, articleId: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');

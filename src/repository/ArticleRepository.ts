@@ -11,19 +11,36 @@ class ArticleRepository {
     this.reposition = getConnection().getRepository(Article);
   }
 
-  list(group?: string) {
+  list(options: {group?: string; startAt?: string}) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
       return this.reposition
         .createQueryBuilder('article')
         .leftJoinAndSelect('article.author', 'user')
-        .where(group ? 'article.group = :group' : '1=1', { group })
+        .where(options.group ? 'article.group = :group' : '1=1', options)
+        .andWhere('article.isDelete = :isDelete', { isDelete: false })
+        .andWhere(options.startAt ? 'article.createAt > :startAt' : '1=1', options)
+        .orderBy("article.createAt", "DESC")
+        .getMany();
+    }
+  }
+  
+  search(options: { search?: string }) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+        .createQueryBuilder('article')
+        .leftJoinAndSelect('article.author', 'user')
+        .where(options.search ? 'article.title like :search' : '1=1', { search: `%${options.search}%`})
+        .orWhere(options.search ? 'article.content like :search': '1=1', { search: `%${options.search}%`})
         .andWhere('article.isDelete = :isDelete', { isDelete: false })
         .orderBy("article.createAt", "DESC")
         .getMany();
     }
   }
+
   get(id: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
