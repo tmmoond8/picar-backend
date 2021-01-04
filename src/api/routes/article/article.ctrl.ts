@@ -1,6 +1,7 @@
 import express from 'express';
 import { getConnection } from 'typeorm';
 import { add } from 'date-fns';
+import Article from '../../../entity/Article';
 import User from '../../../entity/User';
 import ArticleRepository from '../../../repository/ArticleRepository';
 import CommentRepository from '../../../repository/CommentRepository';
@@ -93,8 +94,13 @@ class ArticleController {
 
       const counter = Array.from(counterMap);
       counter.sort(([_, a], [__, b]) => a < b ? 1 : -1);
-      const popArticles = counter.map(([articleId, value]) => {
-        return (articles.find((article) => article.id === articleId))?.to()
+      const popArticles: Article[] = []
+      
+      counter.forEach(([articleId, value]) => {
+        const found = articles.find((article) => article.id === articleId);
+        if (found) {
+          popArticles.push(found);
+        }
       })
 
       return res.json({ ok: true, message: 'list', articles: popArticles });
