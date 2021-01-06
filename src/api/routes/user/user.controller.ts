@@ -5,6 +5,28 @@ import Joi from 'joi';
 
 class UserController {
 
+  public get = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    const {
+      params: { code }
+    } = req;
+
+    if (!code) {
+      return res.json({ ok: false, message: 'user' }); 
+    }
+
+    try {
+      const user = await UserRepository().getByCode(code.toString())
+      return res.json({ ok: true, message: 'user', user }); 
+    } catch (error) {
+      next(error);
+    }
+    return res.json({ ok: false, message: 'user' }); 
+  }
+
   public search = async (
     req: express.Request,
     res: express.Response,
