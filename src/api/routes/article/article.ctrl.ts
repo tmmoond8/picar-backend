@@ -56,6 +56,24 @@ class ArticleController {
     res.json({ ok: true, message: 'list' });
   };
 
+  public listByCode = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const {
+      params : { code },
+    } = req;
+    try {
+      const articles = await ArticleRepository().listByCode(code);
+      res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
+    } catch (error) {
+      next(error);
+    }
+
+    res.json({ ok: true, message: 'list' });
+  };
+
   public listPopular = async (
     req: express.Request,
     res: express.Response,

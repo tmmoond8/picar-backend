@@ -25,6 +25,20 @@ class ArticleRepository {
         .getMany();
     }
   }
+
+  listByCode(code: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+        .createQueryBuilder('article')
+        .leftJoinAndSelect('article.author', 'user')
+        .where('user.code = :code', { code })
+        .andWhere('article.isDelete = :isDelete', { isDelete: false })
+        .orderBy("article.createAt", "DESC")
+        .getMany();
+    }
+  }
   
   search(options: { search?: string }) {
     if (!this.reposition) {
