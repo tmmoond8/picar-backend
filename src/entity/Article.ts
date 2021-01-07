@@ -8,6 +8,7 @@ import {
   getConnection,
 } from 'typeorm';
 import User from './User';
+import Comment from './Comment';
 
 @Entity({ name: 'article' })
 export default class Article {
@@ -32,6 +33,9 @@ export default class Article {
   @Column({ type: 'text', nullable: true })
   photos?: string;
 
+  @ManyToOne((type) => Comment, (comment) => comment.article)
+  comments?: Comment;
+
   @Column({ default: 0})
   commentCount!: number;
 
@@ -49,7 +53,7 @@ export default class Article {
 
   get [Symbol.toStringTag]() {
     return JSON.stringify(
-      Object.assign({}, this, { author: this.author.profile }),
+      Object.assign({}, this, { author: this.author && this.author.profile }),
     );
   }
   to () {

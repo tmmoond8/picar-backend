@@ -35,6 +35,19 @@ class ArticleRepository {
     }
   }
 
+  listWithArticle(userId: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.article', 'article')
+      .where('comment.authorId = :userId', { userId })
+      .orderBy("comment.createAt", "DESC")
+      .getMany();
+    }
+  }
+
   get(id: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');

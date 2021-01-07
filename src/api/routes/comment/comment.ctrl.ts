@@ -1,5 +1,6 @@
 import express from 'express';
 import { getConnection } from 'typeorm';
+import Comment from '../../../entity/Comment';
 import User from '../../../entity/User';
 import ArticleRepository from '../../../repository/ArticleRepository';
 import CommentRepository from '../../../repository/CommentRepository';
@@ -40,18 +41,52 @@ class CommentController {
   ) => {
     const {
       params: { userCode },
+    } = req;
+    try {
+      const targetUser = await UserRepository().getByCode(userCode);
+      const userId = targetUser?.id;
+      if (userId) {
+        const allComments =  await CommentRepository().listAll()
+        const userComments = await CommentRepository().listWithArticle(userId);
+        userComments.forEach(comment => comment.replies = []);
+        const commentMap = userComments.reduce((accum: Record<string, Comment>, comment) => {
+          accum[comment.id] = comment;
+          return accum;
+        }, {});
+        
+        allComments.forEach(reply => {
+          if (reply.about in commentMap) {
+            commentMap[reply.about].replies?.push(reply);
+          }
+        })
+
+        res.json({ 
+          ok: true, 
+          message: 'getUserComments', 
+          userComments, 
+        });
+      }
+      throw new Error();
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
+
+  public getMyComments = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const {
       body: { user }
     } = req;
     try {
-      let userId = user?.profile.id;
-      if (userCode) {
-        const targetUser = await UserRepository().getByCode(userCode);
-        userId = targetUser?.id;
-      }
+      const userId = user?.profile.id;
       const userComments = await CommentRepository().list({userId});
       res.json({ 
         ok: true, 
-        message: 'getUserComments', 
+        message: 'getMyComments', 
         userComments: userComments.map(comment => comment.to()) 
       });
     } catch (error) {

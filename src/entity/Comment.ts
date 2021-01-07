@@ -7,6 +7,7 @@ import {
   UpdateDateColumn,
   getConnection,
 } from 'typeorm';
+import Article from './Article';
 import User from './User';
 
 @Entity({ name: 'comment' })
@@ -25,6 +26,9 @@ export default class Comment {
 
   @Column()
   articleId!: number;
+
+  @ManyToOne((type) => Article, (article) => article.comments)
+  article!: Article;
 
   @Column({ nullable: true })
   about!: string;
