@@ -12,4 +12,5 @@ export default (app: Router) => {
   route.get('/checkUUID', articleContoller.checkUUID);
   route.post('/login/kakao', articleContoller.kakaoLogin);
   route.post('/signUp/kakao', articleContoller.kakaoSignUp);
+  route.delete('/delete/:code', articleContoller.delete);
 };

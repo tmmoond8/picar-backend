@@ -41,6 +41,9 @@ export default class User {
   @Column()
   snsId!: string;
 
+  @Column({ default: false})
+  isDelete!: boolean;
+
   @Column()
   accessToken!: string;
   

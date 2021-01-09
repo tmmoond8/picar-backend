@@ -41,13 +41,35 @@ class AuthController {
     }
   };
 
+  public delete = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    const { params: { code } } = req;
+    const user = await UserRepository().getByCode(code);
+    if (!user) {
+      return res.json({
+        ok: false,
+        message: 'not found',
+      })
+    }
+    user.isDelete = false;
+    user.snsId = `DELETE_${user.snsId}`
+    setCookie(req, res, '');
+    await UserRepository().save(user);
+    return res.json({
+      ok: true,
+      message: 'delete user',
+    })
+  }
+
   public checkUUID = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ) => {
     const { query: { uuid } } = req;
-    console.log(cache.dump());
     const user = cache.get(uuid?.toString() ?? '');
     if (user) {
       const token = await user.generateToken;
@@ -72,7 +94,8 @@ class AuthController {
       }
     });
     const user = await UserRepository().get(data.id.toString(), 'kakao');
-    if (user) {
+    console.log(user);
+    if (user && !user.isDelete) {
       user.accessToken = accessToken;
       user.refreshToken = refreshToken;
       await UserRepository().save(user);
