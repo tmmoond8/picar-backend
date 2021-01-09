@@ -7,8 +7,8 @@ const route = Router();
 export default (app: Router) => {
   app.use('/article', route);
 
-  route.get('/list/:code', articleContoller.listByCode);
   route.get('/list/pop', articleContoller.listPopular);
+  route.get('/list/:code', articleContoller.listByCode);
   route.get('/list', articleContoller.list);
   route.get('/search', articleContoller.search);
   route.post('/write', articleContoller.write);
