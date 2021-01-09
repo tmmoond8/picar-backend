@@ -21,16 +21,6 @@ class TestController {
         .set({ commentCount: () => "commentCount + 1"})
         .where('article.id = :articleId', { articleId: 67 })
         .execute();
-        
-    // .where("id = :id", { id: 1 })
-
-      
-      // if (article) {
-      //   article.commentCount = article.commentCount + 1;
-      //   await ArticleRepository().save(article, {
-      //     transaction: false,
-      //   })
-      // }
     } catch (error) {
 
     }
