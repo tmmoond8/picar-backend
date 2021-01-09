@@ -13,10 +13,11 @@ class BookmarkController {
     } = req;
     try {
       const bookmarks = await BookmarkRepository().list(user.profile.id);
-      res.json({ ok: true, message: 'list', bookmarks: bookmarks.map(bookmark => bookmark.articleId) });
+      return res.json({ ok: true, message: 'list', bookmarks: bookmarks.map(bookmark => bookmark.articleId) });
     } catch (error) {
       next(error);
     }
+    return res.status(500);
   };
   public add = async (
     req: express.Request,
@@ -34,11 +35,12 @@ class BookmarkController {
       } else {
         const bookmark = createBookmark({ articleId: parseInt(articleId), userId: user.profile.id })
         await BookmarkRepository().add(bookmark)
-        res.json({ ok: true, message: 'add', bookmark });
+        return res.json({ ok: true, message: 'add', bookmark });
       }
     } catch (error) {
       next(error);
     }
+    return res.status(500);
   };
 
   public remove = async (
@@ -52,10 +54,11 @@ class BookmarkController {
     } = req;
     try {
       await BookmarkRepository().remove(parseInt(articleId), user.profile.id);
-      res.json({ ok: true, message: 'removed' });
+      return res.json({ ok: true, message: 'removed' });
     } catch (error) {
       next(error);
     }
+    return res.status(500);
   };
 }
 

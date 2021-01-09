@@ -28,10 +28,11 @@ class CommentController {
           comments[reply.about].replies.push(reply.to());
         }
       })
-      res.json({ ok: true, message: 'list', comments: Object.values(comments) });
+      return res.json({ ok: true, message: 'list', comments: Object.values(comments) });
     } catch (error) {
       next(error);
     }
+    return res.status(500);
   };
 
   public getUserComments = async (
@@ -60,7 +61,7 @@ class CommentController {
           }
         })
 
-        res.json({ 
+        return res.json({ 
           ok: true, 
           message: 'getUserComments', 
           userComments, 
@@ -71,6 +72,7 @@ class CommentController {
       console.log(error);
       next(error);
     }
+    return res.status(500);
   };
 
   public getMyComments = async (
@@ -84,7 +86,7 @@ class CommentController {
     try {
       const userId = user?.profile.id;
       const userComments = await CommentRepository().list({userId});
-      res.json({ 
+      return res.json({ 
         ok: true, 
         message: 'getMyComments', 
         userComments: userComments.map(comment => comment.to()) 
@@ -92,6 +94,7 @@ class CommentController {
     } catch (error) {
       next(error);
     }
+    return res.status(500);
   };
 
   public write = async (
@@ -115,10 +118,11 @@ class CommentController {
       if (!body.about) {
         await ArticleRepository().increaseComment(body.articleId);
       }
-      res.json({ ok: true, message: 'write', comment: comment.to() });
+      return res.json({ ok: true, message: 'write', comment: comment.to() });
     } catch (error) {
       next(error);
     }
+    return res.status(500);
   };
   
   public remove = async (
@@ -135,18 +139,18 @@ class CommentController {
       if (comment) {
         if (user.profile.id === comment.authorId)  {
           await CommentRepository().remove(commentId);
-          res.json({
+          return res.json({
             ok: true,
             message: 'removed',
           });
         } else {
-          res.json({
+          return res.json({
             ok: false,
             message: 'not authorized',
           });
         }
       } else {
-        res.json({
+        return res.json({
           ok: false,
           message: 'not found',
         });
@@ -154,6 +158,7 @@ class CommentController {
     } catch(error) {
       next(error);
     }
+    return res.status(500);
   }
 }
 

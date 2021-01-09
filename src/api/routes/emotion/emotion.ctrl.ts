@@ -27,10 +27,11 @@ class EmotionController {
     try {
       const emotions = await EmotionRepository().get(articleId);
       const { emotionCount, yourEmotion}  = getEmotionCounter(emotions, user?.profile?.id);
-      res.json({ ok: true, message: 'list', emotionCount, yourEmotion, });
+      return res.json({ ok: true, message: 'list', emotionCount, yourEmotion, });
     } catch (error) {
       next(error);
     }
+    return res.status(500);
   };
 
   public getUserEmotions = async (
@@ -51,7 +52,7 @@ class EmotionController {
         targetUserCode = userCode;
       }
       const emotions = await EmotionRepository().list(userId);
-      res.json({ 
+      return res.json({ 
         ok: true, 
         message: 'getUserEmotions', 
         emotions: emotions.map(
@@ -61,6 +62,7 @@ class EmotionController {
     } catch (error) {
       next(error);
     }
+    return res.status(500);
   };
 
   public cud = async (
@@ -109,14 +111,14 @@ class EmotionController {
         yourEmotion = type;
       }
 
-      res.json({ ok: true, message: `emotion ${updateStatus}`, updateStatus, emotionCount, yourEmotion });
+      return res.json({ ok: true, message: `emotion ${updateStatus}`, updateStatus, emotionCount, yourEmotion });
     } catch (error) {
       next(error);
     }
+    return res.status(500);
   };
 
 }
-
 
 const getEmotionCounter = (emotions: Emotion[], userId?: string) => {
   const emotionCount = {

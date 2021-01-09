@@ -20,9 +20,9 @@ class AuthController {
   ) => {
     const { body } = req;
     if ('user' in body) {
-      res.json({ ok: true, message: 'user', data: body.user.profile });
+      return res.json({ ok: true, message: 'user', data: body.user.profile });
     }
-    res.json({ ok: false, message: 'guest' });
+    return res.json({ ok: false, message: 'guest' });
   };
 
   public check = async (
@@ -35,9 +35,9 @@ class AuthController {
     if (user) {
       const token = await user.generateToken;
       setCookie(req, res, token);
-      res.json({ ok: true, message: `found`, data: user.profile });
+      return res.json({ ok: true, message: `found`, data: user.profile });
     } else {
-      res.json({ ok: true, message: `not found`, data: null });
+      return res.json({ ok: true, message: `not found`, data: null });
     }
   };
 
@@ -53,9 +53,9 @@ class AuthController {
       const token = await user.generateToken;
       setCookie(req, res, token);
       cache.set(uuid?.toString() ?? '', null);
-      res.json({ ok: true, message: `found`, data: user.profile });
+      return res.json({ ok: true, message: `found`, data: user.profile });
     } else {
-      res.json({ ok: true, message: `not found`, data: null });
+      return res.json({ ok: true, message: `not found`, data: null });
     }
   };
 

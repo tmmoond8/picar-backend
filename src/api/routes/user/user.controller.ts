@@ -79,7 +79,7 @@ class UserController {
           setCookie(req, res, token);
         }
       }
-      res.json({ ok: true, message: `user updated`, modificationData });
+      return res.json({ ok: true, message: `user updated`, modificationData });
     } catch(error) {
       next(error);
     }

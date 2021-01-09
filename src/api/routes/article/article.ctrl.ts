@@ -21,13 +21,13 @@ class ArticleController {
     try {
       const article = await ArticleRepository().get(id);
       if (article) {
-        res.json({
+        return res.json({
           ok: true,
           message: 'get',
           data: article.to(),
         });
       } else {
-        res.json({
+        return res.json({
           ok: false,
           message: 'get',
         });
@@ -35,7 +35,7 @@ class ArticleController {
     } catch (error) {
       next(error);
     }
-    res.json({ ok: true, message: 'get' });
+    return res.json({ ok: true, message: 'get' });
   };
 
   public list = async (
@@ -48,12 +48,12 @@ class ArticleController {
     } = req;
     try {
       const articles = await ArticleRepository().list(query);
-      res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
+      return res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
     } catch (error) {
       next(error);
     }
 
-    res.json({ ok: true, message: 'list' });
+    return res.json({ ok: true, message: 'list' });
   };
 
   public listByCode = async (
@@ -66,12 +66,12 @@ class ArticleController {
     } = req;
     try {
       const articles = await ArticleRepository().listByCode(code);
-      res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
+      return res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
     } catch (error) {
       next(error);
     }
 
-    res.json({ ok: true, message: 'list' });
+    return res.json({ ok: true, message: 'list' });
   };
 
   public listPopular = async (
@@ -163,12 +163,12 @@ class ArticleController {
       article!.group = body.group;
       article!.photos = body.photos;
       await ArticleRepository().save(article);
-      res.json({ ok: true, message: 'write', article: article.to() });
+      return res.json({ ok: true, message: 'write', article: article.to() });
     } catch (error) {
       next(error);
     }
 
-    res.json({ ok: true, message: 'write' });
+    return res.json({ ok: true, message: 'write' });
   };
 
   public update = async (
@@ -189,19 +189,19 @@ class ArticleController {
           article.group = group;
           article.photos = photos;
           await ArticleRepository().save(article);
-          res.json({
+          return res.json({
             ok: true,
             message: 'updated',
             article: article.to()
           });
         } else {
-          res.json({
+          return res.json({
             ok: false,
             message: 'not authorized',
           });
         }
       } else {
-        res.json({
+        return res.json({
           ok: false,
           message: 'not found',
         });
@@ -209,6 +209,8 @@ class ArticleController {
     } catch(error) {
       next(error);
     }
+
+    return res.status(500);
   };
 
   public remove = async (
@@ -225,18 +227,18 @@ class ArticleController {
       if (article) {
         if (user.profile.id === article.authorId)  {
           await ArticleRepository().remove(parseInt(articleId));
-          res.json({
+          return res.json({
             ok: true,
             message: 'removed',
           });
         } else {
-          res.json({
+          return res.json({
             ok: false,
             message: 'not authorized',
           });
         }
       } else {
-        res.json({
+        return res.json({
           ok: false,
           message: 'not found',
         });
@@ -244,6 +246,7 @@ class ArticleController {
     } catch(error) {
       next(error);
     }
+    return res.status(500);
   }
 }
 
