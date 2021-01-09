@@ -129,6 +129,9 @@ function validateLoginProfile(profile: any) {
     provider: Joi.string(),
     snsId: Joi.string().required(),
     thumbnail: Joi.string(),
+    accessToken: Joi.string().required(),
+    refreshToken: Joi.string().required(),
+    uuid: Joi.string().required(),
   });
   return schema.validate(profile);
 }
@@ -146,6 +149,8 @@ async function getUser(
     profileImage: string;
     name: string;
     group: string;
+    accessToken: string;
+    refreshToken: string;
   },
   provider: 'kakao' | 'naver'
 ) {
@@ -161,6 +166,9 @@ async function getUser(
       name,
       group,
     });
+    newUser.accessToken = profile.accessToken;
+    newUser.refreshToken = profile.refreshToken;
+
     user = await getConnection().getRepository(User).save(newUser);
   }
   return user;
