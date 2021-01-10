@@ -11,6 +11,7 @@ import Article from './Article';
 import Comment from './Comment';
 import IUser, { Profile } from '../types/User';
 import { generateToken } from '../lib/token';
+import Notification from './Notification';
 
 @Entity({ name: 'user' })
 export default class User {
@@ -58,6 +59,12 @@ export default class User {
 
   @OneToMany((type) => Comment, (comment) => comment.author)
   comments?: Comment[];
+
+  @OneToMany((type) => Notification, (notification) => notification.user)
+  notifications?: Notification[];
+
+  @Column()
+  lastLoginDate!: string;
 
   @CreateDateColumn()
   createAt!: string;

@@ -6,6 +6,7 @@ import auth from './auth';
 import emotion from './emotion';
 import bookmark from './bookmark';
 import user from './user';
+import notification from './notification';
 
 export default (app: Router) => {
   test(app);
@@ -15,4 +16,5 @@ export default (app: Router) => {
   emotion(app);
   bookmark(app);
   user(app);
+  notification(app);
 };

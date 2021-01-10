@@ -26,15 +26,16 @@ class ArticleRepository {
     }
   }
 
-  listByCode(code: string) {
+  listByCode(code: string, options?: { startAt?: string}) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
       return this.reposition
         .createQueryBuilder('article')
-        .leftJoinAndSelect('article.author', 'user')
+        .innerJoinAndSelect('article.author', 'user')
         .where('user.code = :code', { code })
         .andWhere('article.isDelete = :isDelete', { isDelete: false })
+        .andWhere(options?.startAt ? 'article.createAt > :startAt' : '1=1', options)
         .orderBy("article.createAt", "DESC")
         .getMany();
     }

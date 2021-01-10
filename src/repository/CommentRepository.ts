@@ -48,6 +48,20 @@ class ArticleRepository {
     }
   }
 
+  listByArticleIds(articleIds: number[], startAt: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+      .createQueryBuilder('comment')
+      .innerJoinAndSelect('comment.author', 'user')
+      .where( '(' + (articleIds.map(id => `comment.articleId = ${id}`)).join(' OR ') + ')')
+      .andWhere('comment.createAt > :startAt', { startAt })
+      .orderBy("comment.createAt", "DESC")
+      .getMany();
+    }
+  }
+
   get(id: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
