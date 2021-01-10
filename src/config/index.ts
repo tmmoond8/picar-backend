@@ -22,4 +22,5 @@ export default {
     host: process.env.MYSQL_HOST ?? '',
     port: Number(process.env.MYSQL_PORT) ?? 3306,
   },
+  isDev: process.env.NODE_ENV !== 'production',
 };
