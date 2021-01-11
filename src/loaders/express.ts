@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import morgan from 'morgan';
 import routes from '../api';
 import config from '../config';
 import { jwtMiddleware } from '../lib/token';
@@ -38,6 +39,8 @@ export default ({ app }: { app: express.Application }) => {
   // "Lets you use HTTP verbs such as PUT or DELETE in places where the client doesn't support it."
   // Maybe not needed anymore ?
   app.use(require('method-override')());
+
+  app.use(morgan('common'));
 
   // Middleware that transforms the raw string of req.body into json
   app.use(bodyParser.json());
