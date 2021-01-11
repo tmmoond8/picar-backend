@@ -45,6 +45,20 @@ class EmotionRepository {
     }
   }
 
+  listByArticleIds(articleIds: number[], startAt: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+      .createQueryBuilder('emotion')
+      .innerJoinAndSelect('emotion.author', 'user')
+      .where( '(' + (articleIds.map(id => `emotion.articleId = ${id}`)).join(' OR ') + ')')
+      .andWhere('emotion.createAt > :startAt', { startAt })
+      .orderBy("emotion.createAt", "DESC")
+      .getMany();
+    }
+  }
+
   cud(params: {articleId: number, authorId: string}) {
     if (!this.reposition) {
       throw Error('database not connected !!!');

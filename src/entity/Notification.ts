@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import User from './User';
 import Comment from './Comment';
+import Emotion from './Emotion';
 
 @Entity({ name: 'notification' })
 export default class Notification {
@@ -49,12 +50,22 @@ export default class Notification {
 }
 
 export function createCommentNotification(props: Comment, targetContent: string) {
-  console.log(props.author);
   const notification = new Notification();
   notification.targetContent = targetContent;
   notification.target = 'comment';
   notification.user = props.author;
   notification.createAt = props.createAt;
   notification.isViewd = false;
+  return notification;
+}
+
+export function createEmotionNotification(props: Emotion, targetContent: string) {
+  const notification = new Notification();
+  notification.targetContent = targetContent;
+  notification.target = 'emotion';
+  notification.user = props.author;
+  notification.createAt = props.createAt;
+  notification.isViewd = false;
+  notification.emotion = props.type;
   return notification;
 }

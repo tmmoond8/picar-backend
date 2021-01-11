@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from 'typeorm';
+import User from './User';
 
 @Entity({ name: 'emotion' })
 export default class Emotion {
@@ -16,6 +18,9 @@ export default class Emotion {
 
   @Column()
   authorId!: string;
+
+  @ManyToOne((type) => User, (user) => user.emotions)
+  author!: User;
 
   @Column()
   type!: string;

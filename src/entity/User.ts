@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import Article from './Article';
 import Comment from './Comment';
+import Emotion from './Emotion';
 import IUser, { Profile } from '../types/User';
 import { generateToken } from '../lib/token';
 import Notification from './Notification';
@@ -59,6 +60,9 @@ export default class User {
 
   @OneToMany((type) => Comment, (comment) => comment.author)
   comments?: Comment[];
+
+  @OneToMany((type) => Emotion, (emotion) => emotion.author)
+  emotions?: Emotion[];
 
   @OneToMany((type) => Notification, (notification) => notification.user)
   notifications?: Notification[];

@@ -3,7 +3,8 @@ import { add } from 'date-fns';
 import UserRepository from '../../../repository/UserRepository';
 import ArticleRepository from '../../../repository/ArticleRepository';
 import CommentRepository from '../../../repository/CommentRepository';
-import { createCommentNotification } from '../../../entity/Notification';
+import EmotionRepository from '../../../repository/EmotionRepository';
+import { createCommentNotification, createEmotionNotification } from '../../../entity/Notification';
 
 class NotificationController {
 
@@ -24,13 +25,21 @@ class NotificationController {
       const articles = await ArticleRepository().listByCode(user.profile.code, { startAt: sevenDaysAgo });
       const articleIds = articles.map(article => article.id);
       const lastLoginDate = me.lastLoginDate || sevenDaysAgo;
+
       const comments = await CommentRepository().listByArticleIds(articleIds, lastLoginDate);
+      const commentNotifications = comments.map(comment => 
+          createCommentNotification(comment, articles.find(({ id }) => id === comment.articleId )?.title || ''))
+        
+      const emotions = await EmotionRepository().listByArticleIds(articleIds, lastLoginDate);
+      const emotionNotifications = emotions.map(emotion => 
+        createEmotionNotification(emotion, articles.find(({ id }) => id === emotion.articleId )?.title || ''))
       
-      const commentNotifications = comments.map(comment => createCommentNotification(comment, articles.find(({ id }) => id === comment.articleId )?.title || ''))
-      // console.log(commentNotifications);
-      // const commentsPromise = CommentRepository().listAll(lastLoginDate);
-      // console.log(articles);
-      const notifications = [...commentNotifications.map(c => c.to())];
+      const notifications = [
+        ...commentNotifications.map(c => c.to()),
+        ...emotionNotifications.map(c => c.to()),
+      ];
+
+      notifications.sort((a, b) => a.createAt < b.createAt ? 1 : -1);
 
       return res.json({ ok: true, message: 'list', notifications });
     } catch (error) {
