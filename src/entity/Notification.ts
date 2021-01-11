@@ -27,6 +27,9 @@ export default class Notification {
   @Column()
   emotion?: string;
 
+  @Column()
+  articleId?: number;
+
   @ManyToOne((type) => User, (user) => user.notifications)
   user!: User;
 
@@ -57,6 +60,7 @@ export function createCommentNotification(props: Comment, targetContent: string)
   notification.createAt = props.createAt;
   notification.isViewd = false;
   notification.emotion = '';
+  notification.articleId = props.articleId;
   return notification;
 }
 
@@ -68,5 +72,6 @@ export function createEmotionNotification(props: Emotion, targetContent: string)
   notification.createAt = props.createAt;
   notification.isViewd = false;
   notification.emotion = props.type;
+  notification.articleId = props.articleId;
   return notification;
 }
