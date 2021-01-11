@@ -53,6 +53,24 @@ class NotificationController {
     }
     return res.status(500);
   };
+
+
+  public checkViews = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const {
+      body: { notificationIds },
+    } = req;
+    try {
+      await NotificationRepository().checkViews(notificationIds);
+      return res.json({ ok: true, message: 'check view' });
+    } catch (error) {
+      next(error);
+    }
+    return res.status(500);
+  };
 }
 
 export default new NotificationController();

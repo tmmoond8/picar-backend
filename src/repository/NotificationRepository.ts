@@ -30,6 +30,19 @@ class NotificationRepository {
       this.reposition.save(notification);
     }
   }
+
+  checkViews(notificationIds: string[]) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      console.log('(' + (notificationIds.map(id => `notification.id = ${id}`)).join(' OR ') + ')');
+      return this.reposition.createQueryBuilder()
+        .update(Notification)
+        .set({ isViewd: true })
+        .where( '(' + (notificationIds.map(id => `notification.id = '${id}'`)).join(' OR ') + ')')
+        .execute();
+    }
+  }
 }
 
 let repository: NotificationRepository | null = null;

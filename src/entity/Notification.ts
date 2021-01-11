@@ -12,8 +12,8 @@ import Emotion from './Emotion';
 
 @Entity({ name: 'notification' })
 export default class Notification {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column('text')
   targetContent!: string;
