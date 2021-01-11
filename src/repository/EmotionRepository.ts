@@ -77,6 +77,7 @@ class EmotionRepository {
       this.reposition.save(emotion);
     }
   }
+  
   remove(emotion: Emotion) {
     if (!this.reposition) {
       throw Error('database not connected !!!');

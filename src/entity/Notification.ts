@@ -56,6 +56,7 @@ export function createCommentNotification(props: Comment, targetContent: string)
   notification.user = props.author;
   notification.createAt = props.createAt;
   notification.isViewd = false;
+  notification.emotion = '';
   return notification;
 }
 

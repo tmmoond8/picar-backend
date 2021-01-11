@@ -16,8 +16,18 @@ class NotificationRepository {
     } else {
       return this.reposition
         .createQueryBuilder('notification')
-        .where(userId ? 'notification.userId = :userId' : '1=1', { userId })
+        .innerJoinAndSelect('notification.user', 'user')
+        .where('notification.userId = :userId', { userId })
+        .orderBy("notification.createAt", "DESC")
         .getMany();
+    }
+  }
+
+  save(notification: Notification) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      this.reposition.save(notification);
     }
   }
 }
