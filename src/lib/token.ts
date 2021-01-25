@@ -67,3 +67,13 @@ export const setCookie = (req: express.Request, res: express.Response, token: st
     domain
   });
 };
+
+export const clearCookie = (req: express.Request, res: express.Response) => {
+  const url = urlParse(req.headers.referer || '');
+  const domain = url.hostname.replace('www', '')
+  res.cookie('access_token', '', {
+    httpOnly: true,
+    maxAge: 1,
+    domain
+  });
+};

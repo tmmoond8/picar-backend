@@ -5,7 +5,7 @@ import Joi from 'joi';
 import LruChache from 'lru-cache';
 import UserRepository from '../../../repository/UserRepository';
 import User, { createUser } from '../../../entity/User';
-import { setCookie } from '../../../lib/token';''
+import { setCookie, clearCookie } from '../../../lib/token';''
 
 const cache = new LruChache<string, any>({
   max: 1000,
@@ -40,6 +40,21 @@ class AuthController {
       return res.json({ ok: true, message: `not found`, data: null });
     }
   };
+
+  public logout = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { body } = req;
+    if (body.user) {
+      clearCookie(req, res);
+      return res.json({ ok: true, message: `found` });
+    } else {
+      return res.json({ ok: false, message: `not found` });
+    }
+  };
+
 
   public delete = async (
     req: express.Request,

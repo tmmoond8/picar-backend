@@ -6,7 +6,7 @@ const route = Router();
 
 export default (app: Router) => {
   app.use('/auth', route);
-
+  route.get('/logout', articleContoller.logout);
   route.get('/getUser', testMiddleware, articleContoller.getUser);
   route.get('/check', articleContoller.check);
   route.get('/checkUUID', articleContoller.checkUUID);
