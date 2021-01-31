@@ -123,6 +123,7 @@ export function createUser(props: IUser) {
   user.snsId = props.snsId;
   user.description = props.description;
   user.code = Math.random().toString(36).substr(2, 9);
+  user.lastLoginDate = (new Date()).toISOString();
   return user;
 }
 
