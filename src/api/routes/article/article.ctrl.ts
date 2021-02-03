@@ -74,6 +74,28 @@ class ArticleController {
     return res.json({ ok: true, message: 'list' });
   };
 
+  public listBookmark = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { query } = req;
+    console.log(query);
+    try {
+      const articleIds = JSON.parse(query.articleIds?.toString() ?? '[]');
+      if (!Array.isArray(articleIds)) {
+        throw Error('Parameter error');
+      }
+      const articles = await ArticleRepository().listBookmark(articleIds);
+      return res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
+    } catch (error) {
+      next(error);
+    }
+
+    return res.json({ ok: true, message: 'list' });
+  };
+
+
   public listPopular = async (
     req: express.Request,
     res: express.Response,

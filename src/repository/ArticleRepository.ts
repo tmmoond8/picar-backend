@@ -40,6 +40,21 @@ class ArticleRepository {
         .getMany();
     }
   }
+
+  listBookmark(articleIds: string[]) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      console.log(articleIds);
+      return this.reposition
+        .createQueryBuilder('article')
+        .innerJoinAndSelect('article.author', 'user')
+        .where( '(' + (articleIds.map(id => `article.id = ${id}`)).join(' OR ') + ')')
+        .andWhere('article.isDelete = :isDelete', { isDelete: false })
+        .orderBy("article.createAt", "DESC")
+        .getMany();
+    }
+  }
   
   search(options: { search?: string }) {
     if (!this.reposition) {

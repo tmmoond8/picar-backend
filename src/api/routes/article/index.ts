@@ -8,6 +8,7 @@ export default (app: Router) => {
   app.use('/article', route);
 
   route.get('/list/pop', articleContoller.listPopular);
+  route.get('/list/bookmark', articleContoller.listBookmark);
   route.get('/list/:code', articleContoller.listByCode);
   route.get('/list', articleContoller.list);
   route.get('/search', articleContoller.search);
