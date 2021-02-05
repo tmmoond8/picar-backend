@@ -77,7 +77,7 @@ class EmotionController {
     }} = req;
 
     try {
-      const emotionListPromise = EmotionRepository().list(articleId);
+      const emotionListPromise = EmotionRepository().get(articleId);
       const existed = await EmotionRepository().cud({
         articleId: articleId,
         authorId: user.profile.id,
@@ -85,16 +85,17 @@ class EmotionController {
       let updateStatus = '';
       const emotions = await emotionListPromise;
       let { emotionCount, yourEmotion}  = getEmotionCounter(emotions, user.profile.id);
-      
       if (existed) {
         if (existed.type === type) {
           await EmotionRepository().remove(existed);
           await ArticleRepository().decreaseEmotion(articleId);
           updateStatus = 'removed';
+          emotionCount[existed.type as EmotionKey] = emotionCount[existed.type as EmotionKey] - 1;
           yourEmotion = null;
         } else {
           await EmotionRepository().save(existed);
           updateStatus = 'updated';
+          emotionCount[existed.type as EmotionKey] = emotionCount[existed.type as EmotionKey] - 1;
           emotionCount[type as EmotionKey] = emotionCount[type as EmotionKey] + 1;
           existed.type = type;
           yourEmotion = type;
