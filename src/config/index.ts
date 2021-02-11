@@ -11,6 +11,7 @@ export default {
   api: {
     prefix: '/api',
   },
+  version: '0.1.0',
   logs: {
     level: process.env.LOG_LEVEL || 'silly',
   },

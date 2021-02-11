@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import urlParse from 'url-parse';
+import config from '../config';
 
 const jwtSecret: any = process.env.JWT_SECRET;
 
@@ -61,12 +62,19 @@ export const jwtMiddleware = async (
 export const setCookie = (req: express.Request, res: express.Response, token: string) => {
   const url = urlParse(req.headers.referer || '');
   const domain = url.hostname.replace('www', '')
+  res.cookie('version', config.version, {
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+    domain
+  });
   res.cookie('access_token', token, {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
     domain
   });
 };
+
+export const getCookie = (req: express.Request, key: string) => req.cookies[key];
 
 export const clearCookie = (req: express.Request, res: express.Response) => {
   const url = urlParse(req.headers.referer || '');

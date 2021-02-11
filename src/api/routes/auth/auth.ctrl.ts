@@ -3,9 +3,10 @@ import { getConnection } from 'typeorm';
 import axios from 'axios';
 import Joi from 'joi';
 import LruChache from 'lru-cache';
+import config from '../../../config';
 import UserRepository from '../../../repository/UserRepository';
 import User, { createUser } from '../../../entity/User';
-import { setCookie, clearCookie } from '../../../lib/token';''
+import { setCookie, clearCookie, getCookie } from '../../../lib/token';''
 
 const cache = new LruChache<string, any>({
   max: 1000,
@@ -20,6 +21,11 @@ class AuthController {
   ) => {
     const { body } = req;
     if ('user' in body) {
+      const version = getCookie(req, 'version');
+      if (version !== config.version) {
+        clearCookie(req, res);
+        return res.json({ ok: false, message: 'user'});
+      }
       return res.json({ ok: true, message: 'user', data: body.user.profile });
     }
     return res.json({ ok: false, message: 'guest' });
