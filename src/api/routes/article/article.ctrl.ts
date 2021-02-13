@@ -1,6 +1,6 @@
 import express from 'express';
 import { getConnection } from 'typeorm';
-import { add } from 'date-fns';
+import { add, differenceInDays } from 'date-fns';
 import Article from '../../../entity/Article';
 import User from '../../../entity/User';
 import ArticleRepository from '../../../repository/ArticleRepository';
@@ -107,7 +107,7 @@ class ArticleController {
       BOOKMARK: 3,
     }
     try {
-      const startAt = add(new Date(), { days: -7 }).toISOString();
+      const startAt = add(new Date(), { days: -30 }).toISOString();
       const articlesPromise = ArticleRepository().list({ startAt });
       const commentsPromise = CommentRepository().listAll(startAt);
       const emotionsPromise = EmotionRepository().listAll(startAt);
@@ -119,20 +119,24 @@ class ArticleController {
       const bookmarks = await bookmarksPromise;
 
       const counterMap = new Map<number, number>()
-
+      const getFreshness = ((today: Date) => (createAt: string) => 1 / differenceInDays(today, new Date(createAt)))((new Date()))
+      
       comments.forEach(comment => {
-        counterMap.set(comment.articleId, (counterMap.get(comment.articleId) ?? 0) + COUNTER.COMMENT);
+        const commentValue = (counterMap.get(comment.articleId) ?? 0) + COUNTER.COMMENT * getFreshness(comment.createAt);
+        counterMap.set(comment.articleId, commentValue);
       });
-
+      
       emotions.forEach(emotion => {
-        counterMap.set(emotion.articleId, (counterMap.get(emotion.articleId) ?? 0) + COUNTER.EMOTION);
+        const emotionValue = (counterMap.get(emotion.articleId) ?? 0) + COUNTER.EMOTION * getFreshness(emotion.createAt);
+        counterMap.set(emotion.articleId, emotionValue);
       })
-
+      
       bookmarks.forEach(bookmark => {
-        counterMap.set(bookmark.articleId, (counterMap.get(bookmark.articleId) ?? 0) + COUNTER.BOOKMARK);
+        const bookmarkValue = (counterMap.get(bookmark.articleId) ?? 0) + COUNTER.BOOKMARK * getFreshness(bookmark.createAt);
+        counterMap.set(bookmark.articleId, bookmarkValue);
       })
-
       const counter = Array.from(counterMap);
+
       counter.sort(([_, a], [__, b]) => a < b ? 1 : -1);
       const popArticles: Article[] = []
       
