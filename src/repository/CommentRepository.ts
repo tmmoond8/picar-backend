@@ -55,7 +55,7 @@ class ArticleRepository {
       return this.reposition
       .createQueryBuilder('comment')
       .innerJoinAndSelect('comment.author', 'user')
-      .where( '(' + (articleIds.map(id => `comment.articleId = ${id}`)).join(' OR ') + ')')
+      .where( articleIds.length > 0 ? '(' + (articleIds.map(id => `comment.articleId = ${id}`)).join(' OR ') + ')' : '1=1')
       .andWhere('comment.createAt > :startAt', { startAt })
       .orderBy("comment.createAt", "DESC")
       .getMany();

@@ -52,7 +52,7 @@ class EmotionRepository {
       return this.reposition
       .createQueryBuilder('emotion')
       .innerJoinAndSelect('emotion.author', 'user')
-      .where( '(' + (articleIds.map(id => `emotion.articleId = ${id}`)).join(' OR ') + ')')
+      .where( articleIds.length > 0 ? '(' + (articleIds.map(id => `emotion.articleId = ${id}`)).join(' OR ') + ')' : '1=1')
       .andWhere('emotion.createAt > :startAt', { startAt })
       .orderBy("emotion.createAt", "DESC")
       .getMany();
