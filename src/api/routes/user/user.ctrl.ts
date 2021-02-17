@@ -63,7 +63,7 @@ class UserController {
       const validation = validateUserProfile(body);
 
       if (validation.error) {
-        console.log('error', validation.value)
+        console.error(validation.error);
       } else {
         
         
@@ -95,7 +95,7 @@ function validateUserProfile(modificationInfo: any) {
     name: Joi.string().required().min(2).max(10),
     profileImage: Joi.string().required(),
     group: Joi.string().required(),
-    description: Joi.string().required(),
+    description: Joi.string().required().allow(''),
     user: Joi.object().required(),
   });
   return schema.validate(modificationInfo);
