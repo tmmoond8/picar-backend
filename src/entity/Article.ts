@@ -33,6 +33,9 @@ export default class Article {
   @Column({ type: 'text', nullable: true })
   photos?: string;
 
+  @Column({ type: 'text', nullable: true })
+  thumbnail?: string;
+
   @ManyToOne((type) => Comment, (comment) => comment.article)
   comments?: Comment;
 

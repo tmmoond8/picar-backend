@@ -188,6 +188,7 @@ class ArticleController {
       article!.content = body.content;
       article!.group = body.group;
       article!.photos = body.photos;
+      article!.thumbnail = body.thumbnail;
       await ArticleRepository().save(article);
       return res.json({ ok: true, message: 'write', article: article.to() });
     } catch (error) {
@@ -202,18 +203,17 @@ class ArticleController {
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const {
-      body: { user, title, content, group, photos },
-      params: { articleId },
+    const { body, params: { articleId },
     } = req;
     try {
       const article = await ArticleRepository().get(articleId);
       if (article) {
-        if (user.profile.id === article.authorId)  {
-          article.title = title;
-          article.content = content;
-          article.group = group;
-          article.photos = photos;
+        if (body.user.profile.id === article.authorId)  {
+          article.title = body.title;
+          article.content = body.content;
+          article.group = body.group;
+          article.photos = body.photos;
+          article!.thumbnail = body.thumbnail
           await ArticleRepository().save(article);
           return res.json({
             ok: true,
