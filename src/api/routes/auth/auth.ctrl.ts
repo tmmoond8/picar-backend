@@ -21,12 +21,13 @@ class AuthController {
   ) => {
     const { body } = req;
     if ('user' in body) {
-      const version = getCookie(req, 'version');
-      if (version !== config.version) {
-        clearCookie(req, res);
-        return res.json({ ok: false, message: 'user'});
+      console.log(body.user);
+      const user = await UserRepository().getByCode(body.user.profile.code);
+      if (user) {
+        const token = await user.generateToken;
+        setCookie(req, res, token);
+        return res.json({ ok: true, message: 'user', data: user.profile });
       }
-      return res.json({ ok: true, message: 'user', data: body.user.profile });
     }
     return res.json({ ok: false, message: 'guest' });
   };
