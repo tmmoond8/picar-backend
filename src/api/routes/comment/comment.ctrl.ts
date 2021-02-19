@@ -5,6 +5,8 @@ import User from '../../../entity/User';
 import ArticleRepository from '../../../repository/ArticleRepository';
 import CommentRepository from '../../../repository/CommentRepository';
 import UserRepository from '../../../repository/UserRepository';
+import NotificationRepository from '../../../repository/NotificationRepository';
+import { createCommentNotification, createReplyNotification } from '../../../entity/Notification';
 
 class CommentController {
   public list = async (
@@ -115,8 +117,21 @@ class CommentController {
         comment!.replies = [];
       }
       await CommentRepository().save(comment);
+      const article = await ArticleRepository().get(comment.articleId.toString())
+      if (article && article.authorId) {
+        const commentNotification = createCommentNotification(article.authorId, comment, article.title);
+        await NotificationRepository().save(commentNotification);
+      }
       if (!body.about) {
         await ArticleRepository().increaseComment(body.articleId);
+      } else {
+        if (article) { 
+          const about = await CommentRepository().get(body.about);
+          if (about) {
+            const replyNotification = createReplyNotification(about.authorId, comment, article.title);
+            await NotificationRepository().save(replyNotification);
+          }
+        }
       }
       return res.json({ ok: true, message: 'write', comment: comment.to() });
     } catch (error) {

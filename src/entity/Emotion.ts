@@ -34,12 +34,12 @@ export default class Emotion {
 
 export function createEmotion(params: {
   articleId: number;
-  authorId: string;
+  author: User;
   type: string;
 }) {
   const emotion = new Emotion();
   emotion.articleId = params.articleId;
-  emotion.authorId = params.authorId;
+  emotion.authorId = params.author.profile.id || '';
   emotion.type = params.type;
   return emotion;
 }

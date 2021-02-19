@@ -21,6 +21,9 @@ export default class Notification {
   @Column()
   target!: string;
 
+  @Column()
+  type!: string;
+
   @Column({ nullable: true })
   userId?: string;
 
@@ -52,10 +55,11 @@ export default class Notification {
   }
 }
 
-export function createCommentNotification(props: Comment, targetContent: string) {
+export function createCommentNotification(target: string, props: Comment, targetContent: string) {
   const notification = new Notification();
   notification.targetContent = targetContent;
-  notification.target = 'comment';
+  notification.type = 'comment';
+  notification.target = target;
   notification.user = props.author;
   notification.createAt = props.createAt;
   notification.isViewd = false;
@@ -64,11 +68,25 @@ export function createCommentNotification(props: Comment, targetContent: string)
   return notification;
 }
 
-export function createEmotionNotification(props: Emotion, targetContent: string) {
+export function createReplyNotification(target: string, props: Comment, targetContent: string) {
   const notification = new Notification();
   notification.targetContent = targetContent;
-  notification.target = 'emotion';
+  notification.target = target;
+  notification.type = 'reply';
   notification.user = props.author;
+  notification.createAt = props.createAt;
+  notification.isViewd = false;
+  notification.emotion = '';
+  notification.articleId = props.articleId;
+  return notification;
+}
+
+export function createEmotionNotification(target: string, props: Emotion, targetContent: string) {
+  const notification = new Notification();
+  notification.targetContent = targetContent;
+  notification.target = target;
+  notification.type = 'emotion' ;
+  notification.userId = props.authorId
   notification.createAt = props.createAt;
   notification.isViewd = false;
   notification.emotion = props.type;

@@ -2,7 +2,9 @@ import express from 'express';
 import EmotionRepository from '../../../repository/EmotionRepository';
 import Emotion, { createEmotion } from '../../../entity/Emotion';
 import ArticleRepository from '../../../repository/ArticleRepository';
+import NotificationRepository from '../../../repository/NotificationRepository';
 import UserRepository from '../../../repository/UserRepository';
+import { createEmotionNotification } from '../../../entity/Notification';
 
 const EMOTION_TYPE = {
   LOVE: 'LOVE',
@@ -104,12 +106,19 @@ class EmotionController {
         const newEmotion = createEmotion({
           articleId,
           type,
-          authorId: user.profile.id});
+          author: user
+        });
         await EmotionRepository().save(newEmotion);
         await ArticleRepository().increaseEmotion(articleId);
         updateStatus = 'created';
         emotionCount[type as EmotionKey] = emotionCount[type as EmotionKey] + 1;
         yourEmotion = type;
+
+        const article = await ArticleRepository().get(articleId)
+        if (article && article.authorId) {
+          const commentNotification = createEmotionNotification(article.authorId, newEmotion, article.title);
+          await NotificationRepository().save(commentNotification);
+        }
       }
 
       return res.json({ ok: true, message: `emotion ${updateStatus}`, updateStatus, emotionCount, yourEmotion });

@@ -10,14 +10,14 @@ class NotificationRepository {
     this.reposition = getConnection().getRepository(Notification);
   }
 
-  list(userId: string) {
+  list(target: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
       return this.reposition
         .createQueryBuilder('notification')
         .innerJoinAndSelect('notification.user', 'user')
-        .where('notification.userId = :userId', { userId })
+        .where('notification.target = :target', { target })
         .orderBy("notification.createAt", "DESC")
         .getMany();
     }

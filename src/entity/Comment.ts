@@ -18,8 +18,8 @@ export default class Comment {
   @Column('text')
   content!: string;
 
-  @Column({ nullable: true })
-  authorId?: string;
+  @Column()
+  authorId!: string;
 
   @ManyToOne((type) => User, (user) => user.comments)
   author!: User;
