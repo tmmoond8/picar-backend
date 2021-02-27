@@ -12,6 +12,7 @@ import Comment from './Comment';
 import Emotion from './Emotion';
 import IUser, { Profile } from '../types/User';
 import { generateToken } from '../lib/token';
+import getDefaultProfile from '../lib/profile';
 import Notification from './Notification';
 
 @Entity({ name: 'user' })
@@ -114,9 +115,10 @@ export default class User {
 export function createUser(props: IUser) {
   const user = new User();
   if (props.id) user.id = props.id;
+  const defaultProfileImage = getDefaultProfile();
   user.name = props.name;
-  user.thumbnail = props.thumbnail;
-  user.profileImage = props.profileImage;
+  user.thumbnail = props.thumbnail ?? defaultProfileImage;
+  user.profileImage = props.profileImage ?? defaultProfileImage;
   user.email = props.email;
   user.group = props.group;
   user.provider = props.provider;
@@ -124,7 +126,9 @@ export function createUser(props: IUser) {
   user.description = props.description;
   user.code = Math.random().toString(36).substr(2, 9);
   user.lastLoginDate = (new Date()).toISOString();
+  console.log(user);
   return user;
 }
 
 export const UserRepository = () => getConnection().getRepository(User);
+
