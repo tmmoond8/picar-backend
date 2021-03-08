@@ -156,6 +156,7 @@ class AuthController {
     const {
       body,
     } = req;
+    delete body.user;
     const validation = validateLoginProfile(body);
     if (validation.error) {
       return next(validation.error);
