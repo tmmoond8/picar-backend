@@ -103,6 +103,24 @@ class AuthController {
     }
   };
 
+  // owwner 로그인
+  public owwnerLogin = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { email, password } = req.body;
+    if (password === config.owwnerKey) {
+      const user = await UserRepository().getByEmail(email);
+      if (user && !user.isDelete) {
+        const token = await user.generateToken;
+        setCookie(req, res, token);
+        return res.json({ ok: true, message: `logined`, profile: user.profile });
+      }
+    }
+    return res.json({ ok: false, message: `not found`, data: null });
+  }
+
   // kakao 로그인
   public kakaoLogin = async (
     req: express.Request,

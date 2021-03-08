@@ -37,6 +37,14 @@ class UserRepository {
     }
   }
 
+  getByEmail(email: string) {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition.findOne({ where: { email } });
+    }
+  }
+
   save(user: User) {
     if (!this.reposition) {
       throw Error('database not connected !!!');
