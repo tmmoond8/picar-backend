@@ -43,10 +43,7 @@ export const jwtMiddleware = async (
       // 하루가 지나면 갱신해준다.
       const { _id, profile } = decoded;
       const freshToken = await generateToken({ _id, profile });
-      res.cookie('access_token', freshToken, {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7days
-      });
+      setCookie(req, res, freshToken);
     }
 
     // ctx.request.user 에 디코딩된 값을 넣어줍니다
@@ -61,7 +58,7 @@ export const jwtMiddleware = async (
 
 export const setCookie = (req: express.Request, res: express.Response, token: string) => {
   const url = urlParse(req.headers.referer || '');
-  const domain = url.hostname.replace('www', '')
+  const domain = url.hostname.replace('www', '').replace('api', '');
   res.cookie('version', config.version, {
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
@@ -83,5 +80,16 @@ export const clearCookie = (req: express.Request, res: express.Response) => {
     httpOnly: true,
     maxAge: 1,
     domain
+  });
+  res.cookie('access_token', '', {
+    httpOnly: true,
+    maxAge: 1,
+    domain: `api${domain}`
+  });
+
+  res.cookie('access_token', '', {
+    httpOnly: true,
+    maxAge: 1,
+    domain: `.api${domain}`
   });
 };
