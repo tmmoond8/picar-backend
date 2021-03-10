@@ -6,7 +6,7 @@ import LruChache from 'lru-cache';
 import config from '../../../config';
 import UserRepository from '../../../repository/UserRepository';
 import User, { createUser } from '../../../entity/User';
-import { setCookie, clearCookie, getCookie } from '../../../lib/token';''
+import { setCookie, clearCookie } from '../../../lib/token';''
 
 const cache = new LruChache<string, any>({
   max: 1000,

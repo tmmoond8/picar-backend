@@ -37,7 +37,6 @@ export const jwtMiddleware = async (
 
   try {
     const decoded: any = await decodeToken(token); // 토큰을 디코딩 합니다
-
     // 토큰 만료일이 하루밖에 안남으면 토큰을 재발급합니다
     if (Date.now() / 1000 - decoded.iat > 60 * 60 * 24) {
       // 하루가 지나면 갱신해준다.
@@ -68,6 +67,11 @@ export const setCookie = (req: express.Request, res: express.Response, token: st
     httpOnly: true,
     maxAge: 1000 * 60 * 60 * 24 * 7,
     domain
+  });
+  res.cookie('access_token', '', {
+    httpOnly: true,
+    maxAge: 1,
+    domain: `api${domain}`
   });
 };
 
