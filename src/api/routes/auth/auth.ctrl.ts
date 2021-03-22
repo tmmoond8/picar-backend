@@ -22,7 +22,6 @@ class AuthController {
   ) => {
     const { body } = req;
     if ('user' in body) {
-      console.log(body.user);
       const user = await UserRepository().getByCode(body.user.profile.code);
       if (user) {
         const token = await user.generateToken;
@@ -153,9 +152,9 @@ class AuthController {
       await UserRepository().save(user);
       const token = await user.generateToken;
       setCookie(req, res, token);
-      return res.json(user.profile);
+      return res.json({ ok: true, message: 'user', profile: user.profile, owwnersToken: token});
     }
-    return res.json(data);
+    return res.json({ ok: true, kakaoUser: data });
   }
 
   // Kakao 회원가입

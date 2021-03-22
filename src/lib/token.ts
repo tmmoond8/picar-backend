@@ -32,7 +32,7 @@ export const jwtMiddleware = async (
   res: express.Response,
   next: express.NextFunction
 ) => {
-  const token = req.cookies['access_token']; // ctx 에서 access_token 을 읽어옵니다
+  const token = req.cookies['access_token'] ?? req.headers.owwners_token; // ctx 에서 access_token 을 읽어옵니다
   if (!token) return next(); // 토큰이 없으면 바로 다음 작업을 진행합니다.
 
   try {
@@ -42,6 +42,7 @@ export const jwtMiddleware = async (
       // 하루가 지나면 갱신해준다.
       const { _id, profile } = decoded;
       const freshToken = await generateToken({ _id, profile });
+      req.headers.freshToken = freshToken;
       setCookie(req, res, freshToken);
     }
 

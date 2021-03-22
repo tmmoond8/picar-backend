@@ -13,7 +13,6 @@ class TestController {
       .createQueryBuilder('article')
       .where('article.id = :articleId', { articleId: 67 })
       .getOne();
-      console.log(article?.commentCount);
       
       await ArticleRepository()
         .createQueryBuilder()

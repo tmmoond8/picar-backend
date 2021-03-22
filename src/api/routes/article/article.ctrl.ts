@@ -80,7 +80,6 @@ class ArticleController {
     next: express.NextFunction,
   ) => {
     const { query } = req;
-    console.log(query);
     try {
       const articleIds = JSON.parse(query.articleIds?.toString() ?? '[]');
       if (!Array.isArray(articleIds)) {

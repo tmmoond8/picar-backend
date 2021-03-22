@@ -126,7 +126,6 @@ export function createUser(props: IUser) {
   user.description = props.description;
   user.code = Math.random().toString(36).substr(2, 9);
   user.lastLoginDate = (new Date()).toISOString();
-  console.log(user);
   return user;
 }
 

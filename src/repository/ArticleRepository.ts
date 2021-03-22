@@ -45,7 +45,6 @@ class ArticleRepository {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
-      console.log(articleIds);
       return this.reposition
         .createQueryBuilder('article')
         .innerJoinAndSelect('article.author', 'user')
