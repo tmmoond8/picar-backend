@@ -10,7 +10,7 @@ import { setCookie, clearCookie } from '../../../lib/token';''
 
 const cache = new LruChache<string, any>({
   max: 1000,
-  maxAge: 1000 * 60 * 60 * 3,
+  maxAge: 1000 * 60 * 3, // 3분
 })
 
 class AuthController {
@@ -134,14 +134,15 @@ class AuthController {
       }
     });
     const user = await UserRepository().get(data.id.toString(), 'kakao');
-    console.log(user);
     if (user && !user.isDelete) {
       user.accessToken = accessToken;
       user.refreshToken = refreshToken;
       await UserRepository().save(user);
       const token = await user.generateToken;
       setCookie(req, res, token);
-      cache.set(uuid, user);
+      if (uuid) {
+        cache.set(uuid, user);
+      }
       return res.json(user.profile);
     }
     return res.json(data);
@@ -174,6 +175,14 @@ class AuthController {
       return next(error);
     }
   };
+
+  public list = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    return res.json({ ok: true, message: `list`, list: cache.dump() });
+  }
 }
 
 export default new AuthController();

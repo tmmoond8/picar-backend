@@ -1,17 +1,18 @@
 import { Router } from 'express';
-import articleContoller from './auth.ctrl';
+import authContoller from './auth.ctrl';
 import { testMiddleware } from '../../middlewares';
 
 const route = Router();
 
 export default (app: Router) => {
   app.use('/auth', route);
-  route.get('/logout', articleContoller.logout);
-  route.get('/getUser', testMiddleware, articleContoller.getUser);
-  route.get('/check', articleContoller.check);
-  route.get('/checkUUID', articleContoller.checkUUID);
-  route.post('/login/kakao', articleContoller.kakaoLogin);
-  route.post('/login/owwner', articleContoller.owwnerLogin);
-  route.post('/signUp/kakao', articleContoller.kakaoSignUp);
-  route.delete('/delete/:code', articleContoller.delete);
+  route.get('/logout', authContoller.logout);
+  route.get('/getUser', testMiddleware, authContoller.getUser);
+  route.get('/check', authContoller.check);
+  route.get('/checkUUID', authContoller.checkUUID);
+  route.post('/login/kakao', authContoller.kakaoLogin);
+  route.post('/login/owwner', authContoller.owwnerLogin);
+  route.post('/signUp/kakao', authContoller.kakaoSignUp);
+  route.delete('/delete/:code', authContoller.delete);
+  route.get('/list', authContoller.list)
 };
