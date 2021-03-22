@@ -78,7 +78,7 @@ class AuthController {
     }
     user.isDelete = false;
     user.snsId = `DELETE_${user.snsId}`
-    setCookie(req, res, '');
+    clearCookie(req, res);
     await UserRepository().save(user);
     return res.json({
       ok: true,

@@ -76,18 +76,20 @@ export const getCookie = (req: express.Request, key: string) => req.cookies[key]
 export const clearCookie = (req: express.Request, res: express.Response) => {
   const url = urlParse(req.headers.referer || '');
   const domain = url.hostname.replace('www', '')
-  res.cookie('access_token', '', {
+  res.cookie('access_token', 'clear', {
     httpOnly: true,
+    maxAge: 1,
     domain
   });
-  res.cookie('access_token', '', {
+  res.cookie('access_token', 'clear', {
     httpOnly: true,
+    maxAge: 1,
     domain: `api${domain}`
   });
 
-  res.cookie('access_token', '', {
+  res.cookie('access_token', 'clear', {
     httpOnly: true,
+    maxAge: 1,
     domain: `.api${domain}`
   });
-  res.clearCookie('access_token');
 };
