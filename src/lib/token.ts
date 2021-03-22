@@ -68,11 +68,6 @@ export const setCookie = (req: express.Request, res: express.Response, token: st
     maxAge: 1000 * 60 * 60 * 24 * 7,
     domain
   });
-  res.cookie('access_token', '', {
-    httpOnly: true,
-    maxAge: 1,
-    domain: `api${domain}`
-  });
 };
 
 export const getCookie = (req: express.Request, key: string) => req.cookies[key];
