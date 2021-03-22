@@ -10,7 +10,8 @@ import { setCookie, clearCookie } from '../../../lib/token';''
 
 const cache = new LruChache<string, any>({
   max: 1000,
-  maxAge: 1000 * 60 * 3, // 3분
+  // maxAge: 1000 * 60 * 3, // 3분
+  maxAge: 1000 * 9, // 9초
 })
 
 class AuthController {
@@ -86,21 +87,33 @@ class AuthController {
     })
   }
 
-  public checkUUID = async (
+  public getUUID = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { query: { uuid } } = req;
-    const user = cache.get(uuid?.toString() ?? '');
-    if (user) {
-      const token = await user.generateToken;
-      setCookie(req, res, token);
-      cache.set(uuid?.toString() ?? '', null);
-      return res.json({ ok: true, message: `found`, data: user.profile });
+    const { params: { id } } = req;
+    const tokens = cache.get(id);
+    if (tokens) {
+      cache.set(id, null);
+      return res.json({ ok: true, message: `found`, tokens });
     } else {
-      return res.json({ ok: true, message: `not found`, data: null });
+      return res.json({ ok: true, message: `not found`, tokens: null });
     }
+  };
+
+  public setUUID = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { params: { id } } = req;
+    const { accessToken, refreshToken }  = req.body;
+    if (id) {
+      cache.set(id, { accessToken, refreshToken });
+      return res.json({ ok: true, message: `setUUid: ${id}` });
+    }
+    return res.json({ ok: false, message: `setUUid: ${id}` });
   };
 
   // owwner 로그인
@@ -127,7 +140,7 @@ class AuthController {
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { accessToken, refreshToken, uuid } = req.body;
+    const { accessToken, refreshToken } = req.body;
     const { data } = await axios.get('https://kapi.kakao.com/v2/user/me', {
       headers: {
         Authorization: `Bearer ${accessToken}`
@@ -140,9 +153,6 @@ class AuthController {
       await UserRepository().save(user);
       const token = await user.generateToken;
       setCookie(req, res, token);
-      if (uuid) {
-        cache.set(uuid, user);
-      }
       return res.json(user.profile);
     }
     return res.json(data);
@@ -204,7 +214,7 @@ function validateLoginProfile(profile: any) {
     thumbnail: Joi.string(),
     accessToken: Joi.string().required(),
     refreshToken: Joi.string().required(),
-    uuid: Joi.string().required(),
+    uuid: Joi.string(),
   });
   return schema.validate(profile);
 }
