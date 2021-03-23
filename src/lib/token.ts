@@ -32,7 +32,9 @@ export const jwtMiddleware = async (
   res: express.Response,
   next: express.NextFunction
 ) => {
-  const token = req.cookies['access_token'] ?? req.headers.owwners_token; // ctx 에서 access_token 을 읽어옵니다
+  const token = req.cookies['access_token'] ?? req.headers['x-custom-token']; // ctx 에서 access_token 을 읽어옵니다
+  console.log('cookies', req.cookies);
+  console.log('headers', req.headers)
   if (!token) return next(); // 토큰이 없으면 바로 다음 작업을 진행합니다.
 
   try {
