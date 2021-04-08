@@ -10,8 +10,7 @@ import { setCookie, clearCookie } from '../../../lib/token';''
 
 const cache = new LruChache<string, any>({
   max: 1000,
-  // maxAge: 1000 * 60 * 3, // 3분
-  maxAge: 1000 * 9, // 9초
+  maxAge: 1000 * 60 * 3, // 3분
 })
 
 class AuthController {
