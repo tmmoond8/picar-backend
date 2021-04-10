@@ -6,7 +6,7 @@ import LruChache from 'lru-cache';
 import config from '../../../config';
 import UserRepository from '../../../repository/UserRepository';
 import User, { createUser } from '../../../entity/User';
-import { setCookie, clearCookie } from '../../../lib/token';''
+import { setCookie, clearCookie } from '../../../lib/token'; ''
 
 const cache = new LruChache<string, any>({
   max: 1000,
@@ -36,7 +36,7 @@ class AuthController {
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { query: { snsId, provider} } = req;
+    const { query: { snsId, provider } } = req;
     let user = await UserRepository().get(snsId as string, provider as string);
     if (user) {
       const token = await user.generateToken;
@@ -106,12 +106,32 @@ class AuthController {
     next: express.NextFunction,
   ) => {
     const { params: { id } } = req;
-    const { accessToken, refreshToken }  = req.body;
+    const { accessToken, refreshToken } = req.body;
     if (id) {
       cache.set(id, { accessToken, refreshToken });
       return res.json({ ok: true, message: `setUUid: ${id}` });
     }
     return res.json({ ok: false, message: `setUUid: ${id}` });
+  };
+
+
+  public getToken = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { code, provider } = req.body;
+    if (provider === 'naver') {
+      const url = `https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=${config.auth.naverClientId}&client_secret=${config.auth.naverClientSecret}&code=${code}&state=naver`;
+      const { data } = await axios.get(url, {
+        headers: {
+          'X-Naver-Client-Id': config.auth.naverClientId,
+          'X-Naver-Client-Secret': config.auth.naverClientSecret,
+        }
+      });
+      return res.json({ ok: true, message: "getToken", access_token: data.access_token, refresh_token: data.refresh_token });
+    }
+    return res.json({ ok: false, message: `getToken: ${code}, ${provider}` });
   };
 
   // owwner 로그인
@@ -151,12 +171,12 @@ class AuthController {
       await UserRepository().save(user);
       const token = await user.generateToken;
       setCookie(req, res, token);
-      return res.json({ ok: true, message: 'user', profile: user.profile, owwnersToken: token});
+      return res.json({ ok: true, message: 'user', profile: user.profile, owwnersToken: token });
     }
     return res.json({ ok: true, kakaoUser: data });
   }
 
-  // Kakao 회원가입
+  // Kakao 회원가입 TODO DEPRECATED
   public kakaoSignUp = async (
     req: express.Request,
     res: express.Response,
@@ -170,7 +190,7 @@ class AuthController {
     if (validation.error) {
       return next(validation.error);
     }
-    
+
     try {
       const user = await getUser(body, 'kakao');
       if (user === undefined) {
@@ -183,6 +203,59 @@ class AuthController {
       return next(error);
     }
   };
+
+  // 회원가입
+  public signUp = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    const {
+      body,
+    } = req;
+    delete body.user;
+    const validation = validateLoginProfile(body);
+    if (validation.error) {
+      return next(validation.error);
+    }
+
+    try {
+      const user = await getUser(body, body.provider);
+      if (user === undefined) {
+        throw new Error('');
+      }
+      const token = await user.generateToken;
+      setCookie(req, res, token);
+      return res.json(user.profile);
+    } catch (error) {
+      return next(error);
+    }
+  };
+
+
+  // naver 로그인
+  public naverLogin = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { accessToken, refreshToken } = req.body;
+    const { data: { response } } = await axios.get('https://openapi.naver.com/v1/nid/me', {
+      headers: {
+        Authorization: `Bearer ${accessToken}`
+      }
+    });
+    const user = await UserRepository().get(response.id.toString(), 'naver');
+    if (user && !user.isDelete) {
+      user.accessToken = accessToken;
+      user.refreshToken = refreshToken;
+      await UserRepository().save(user);
+      const token = await user.generateToken;
+      setCookie(req, res, token);
+      return res.json({ ok: true, message: 'user', profile: user.profile, owwnersToken: token });
+    }
+    return res.json({ ok: true, naverUser: response });
+  }
 
   public list = async (
     req: express.Request,

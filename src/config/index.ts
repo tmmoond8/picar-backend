@@ -25,4 +25,8 @@ export default {
   },
   isDev: process.env.NODE_ENV !== 'production',
   owwnerKey: process.env.OWWNER_KEY ?? '',
+  auth: {
+    naverClientId: process.env.NAVER_CLIENT_ID ?? '',
+    naverClientSecret: process.env.NAVER_CLIENT_SECRET ?? '',
+  }
 };

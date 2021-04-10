@@ -13,7 +13,10 @@ export default (app: Router) => {
   route.post('/uuid/:id', authContoller.setUUID);
   route.get('/uuid/:id', authContoller.getUUID);
   route.post('/login/kakao', authContoller.kakaoLogin);
+  route.post('/login/naver', authContoller.naverLogin);
   route.post('/login/owwner', authContoller.owwnerLogin);
+  route.post('/token', authContoller.getToken);
   route.post('/signUp/kakao', authContoller.kakaoSignUp);
+  route.post('/signUp', authContoller.signUp);
   route.delete('/delete/:code', authContoller.delete);
 };
