@@ -226,7 +226,7 @@ class AuthController {
       }
       const token = await user.generateToken;
       setCookie(req, res, token);
-      return res.json(user.profile);
+      return res.json({ ok: true, message: 'user', profile: user.profile, owwnersToken: token });
     } catch (error) {
       return next(error);
     }
