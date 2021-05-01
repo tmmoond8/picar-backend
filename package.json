@@ -20,6 +20,7 @@
     "lru-cache": "^6.0.0",
     "method-override": "^3.0.0",
     "morgan": "^1.10.0",
+    "mssql": "^6.3.1",
     "typeorm": "^0.2.26",
     "url-parse": "^1.4.7",
     "winston": "^3.3.3"

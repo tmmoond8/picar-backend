@@ -5,8 +5,7 @@ import entities from '../entity';
 
 export default async () =>
   await createConnection({
-    ...config.mysql,
+    ...config.db,
     entities,
-    type: 'mysql',
     synchronize: true,
   });

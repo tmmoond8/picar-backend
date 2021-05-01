@@ -62,7 +62,7 @@ class ArticleController {
     next: express.NextFunction,
   ) => {
     const {
-      params : { code },
+      params: { code },
     } = req;
     try {
       const articles = await ArticleRepository().listByCode(code);
@@ -119,17 +119,17 @@ class ArticleController {
 
       const counterMap = new Map<number, number>()
       const getFreshness = ((today: Date) => (createAt: string) => 1 / differenceInDays(today, new Date(createAt)))((new Date()))
-      
+
       comments.forEach(comment => {
         const commentValue = (counterMap.get(comment.articleId) ?? 0) + COUNTER.COMMENT * getFreshness(comment.createAt);
         counterMap.set(comment.articleId, commentValue);
       });
-      
+
       emotions.forEach(emotion => {
         const emotionValue = (counterMap.get(emotion.articleId) ?? 0) + COUNTER.EMOTION * getFreshness(emotion.createAt);
         counterMap.set(emotion.articleId, emotionValue);
       })
-      
+
       bookmarks.forEach(bookmark => {
         const bookmarkValue = (counterMap.get(bookmark.articleId) ?? 0) + COUNTER.BOOKMARK * getFreshness(bookmark.createAt);
         counterMap.set(bookmark.articleId, bookmarkValue);
@@ -138,7 +138,7 @@ class ArticleController {
 
       counter.sort(([_, a], [__, b]) => a < b ? 1 : -1);
       const popArticles: Article[] = []
-      
+
       counter.forEach(([articleId, value]) => {
         const found = articles.find((article) => article.id === articleId);
         if (found) {
@@ -207,7 +207,7 @@ class ArticleController {
     try {
       const article = await ArticleRepository().get(articleId);
       if (article) {
-        if (body.user.profile.id === article.authorId)  {
+        if (body.user.profile.id === article.authorId) {
           article.title = body.title;
           article.content = body.content;
           article.group = body.group;
@@ -231,7 +231,7 @@ class ArticleController {
           message: 'not found',
         });
       }
-    } catch(error) {
+    } catch (error) {
       next(error);
     }
 
@@ -250,7 +250,7 @@ class ArticleController {
     try {
       const article = await ArticleRepository().get(articleId);
       if (article) {
-        if (user.profile.id === article.authorId)  {
+        if (user.profile.id === article.authorId) {
           await ArticleRepository().remove(parseInt(articleId));
           return res.json({
             ok: true,
@@ -268,7 +268,7 @@ class ArticleController {
           message: 'not found',
         });
       }
-    } catch(error) {
+    } catch (error) {
       next(error);
     }
     return res.status(500);

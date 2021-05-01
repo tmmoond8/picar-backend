@@ -7,6 +7,15 @@ if (envFound.error) {
   throw new Error("⚠️  Couldn't find .env file  ⚠️");
 }
 
+interface DataBaseConfig {
+  username: string;
+  password: string;
+  database: string;
+  host: string;
+  port: number;
+  type: any;
+}
+
 export default {
   api: {
     prefix: '/api',
@@ -16,13 +25,14 @@ export default {
     level: process.env.LOG_LEVEL || 'silly',
   },
   port: process.env.PORT,
-  mysql: {
-    username: process.env.MYSQL_USER ?? '',
-    password: process.env.MYSQL_PASSWORD ?? '',
-    database: process.env.MYSQL_DATABASE ?? '',
-    host: process.env.MYSQL_HOST ?? '',
-    port: Number(process.env.MYSQL_PORT) ?? 3306,
-  },
+  db: {
+    username: process.env.DB_USER ?? '',
+    password: process.env.DB_PASSWORD ?? '',
+    database: process.env.DB_DATABASE ?? '',
+    host: process.env.DB_HOST ?? '',
+    port: Number(process.env.DB_PORT) ?? 3306,
+    type: process.env.DB_TYPE ?? 'mysql',
+  } as DataBaseConfig,
   isDev: process.env.NODE_ENV !== 'production',
   owwnerKey: process.env.OWWNER_KEY ?? '',
   auth: {
