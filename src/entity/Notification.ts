@@ -15,7 +15,7 @@ export default class Notification {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column('text')
+  @Column()
   targetContent!: string;
 
   @Column()
@@ -38,7 +38,7 @@ export default class Notification {
 
   @Column({ default: false })
   isViewd!: boolean;
-  
+
   @CreateDateColumn()
   createAt!: string;
 
@@ -85,7 +85,7 @@ export function createEmotionNotification(target: string, props: Emotion, target
   const notification = new Notification();
   notification.targetContent = targetContent;
   notification.target = target;
-  notification.type = 'emotion' ;
+  notification.type = 'emotion';
   notification.userId = props.authorId
   notification.createAt = props.createAt;
   notification.isViewd = false;
