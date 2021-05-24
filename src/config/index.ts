@@ -34,7 +34,7 @@ export default {
     type: process.env.DB_TYPE ?? 'mysql',
   } as DataBaseConfig,
   isDev: process.env.NODE_ENV !== 'production',
-  owwnerKey: process.env.OWWNER_KEY ?? '',
+  adminKey: process.env.ADMIN_KEY ?? '',
   auth: {
     naverClientId: process.env.NAVER_CLIENT_ID ?? '',
     naverClientSecret: process.env.NAVER_CLIENT_SECRET ?? '',

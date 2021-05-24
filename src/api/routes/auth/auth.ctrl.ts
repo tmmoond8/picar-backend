@@ -134,14 +134,14 @@ class AuthController {
     return res.json({ ok: false, message: `getToken: ${code}, ${provider}` });
   };
 
-  // owwner 로그인
+  // 로그인
   public owwnerLogin = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ) => {
     const { email, password } = req.body;
-    if (password === config.owwnerKey) {
+    if (password === config.adminKey) {
       const user = await UserRepository().getByEmail(email);
       if (user && !user.isDelete) {
         const token = await user.generateToken;
@@ -171,7 +171,7 @@ class AuthController {
       await UserRepository().save(user);
       const token = await user.generateToken;
       setCookie(req, res, token);
-      return res.json({ ok: true, message: 'user', profile: user.profile, owwnersToken: token });
+      return res.json({ ok: true, message: 'user', profile: user.profile, token });
     }
     return res.json({ ok: true, kakaoUser: data });
   }
@@ -226,7 +226,7 @@ class AuthController {
       }
       const token = await user.generateToken;
       setCookie(req, res, token);
-      return res.json({ ok: true, message: 'user', profile: user.profile, owwnersToken: token });
+      return res.json({ ok: true, message: 'user', profile: user.profile, token });
     } catch (error) {
       return next(error);
     }
@@ -252,7 +252,7 @@ class AuthController {
       await UserRepository().save(user);
       const token = await user.generateToken;
       setCookie(req, res, token);
-      return res.json({ ok: true, message: 'user', profile: user.profile, owwnersToken: token });
+      return res.json({ ok: true, message: 'user', profile: user.profile, token });
     }
     return res.json({ ok: true, naverUser: response });
   }

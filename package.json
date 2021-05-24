@@ -1,9 +1,9 @@
 {
-  "name": "owner-backend",
+  "name": "picar-backend",
   "version": "0.0.1",
-  "description": "backend for owner",
+  "description": "backend for picar",
   "main": "index.js",
-  "repository": "https://github.com/tmmoond8/express-boilerplate.git",
+  "repository": "https://github.com/tmmoond8/picar-backend",
   "author": "moonti <tmmoond8@gmail.com>",
   "license": "MIT",
   "private": false,
@@ -50,8 +50,8 @@
   },
   "scripts": {
     "build": "yarn clean && tsc",
-    "reload": "yarn build && pm2 reload owner-api",
-    "start": "NODE_ENV=production pm2 start dist/app.js -i 0 --name owner-api",
+    "reload": "yarn build && pm2 reload picar-api",
+    "start": "NODE_ENV=production pm2 start dist/app.js -i 0 --name picar-api",
     "stop": "pm2 kill",
     "restart": "yarn stop && yarn start",
     "dev": "nodemon --exec ts-node src/app.ts",

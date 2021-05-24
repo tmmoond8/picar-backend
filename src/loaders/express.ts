@@ -7,7 +7,7 @@ import routes from '../api';
 import config from '../config';
 import { jwtMiddleware } from '../lib/token';
 
-interface OwnerError extends Error {
+interface PicarError extends Error {
   status?: number;
 }
 
@@ -56,7 +56,7 @@ export default ({ app }: { app: express.Application }) => {
 
   /// catch 404 and forward to error handler
   app.use((req, res, next) => {
-    const err = new Error('Not Found') as OwnerError;
+    const err = new Error('Not Found') as PicarError;
     err.status = 404;
     next(err);
   });
@@ -64,7 +64,7 @@ export default ({ app }: { app: express.Application }) => {
   /// error handlers
   app.use(
     (
-      err: OwnerError,
+      err: PicarError,
       req: express.Request,
       res: express.Response,
       next: express.NextFunction,
@@ -83,7 +83,7 @@ export default ({ app }: { app: express.Application }) => {
   );
   app.use(
     (
-      err: OwnerError,
+      err: PicarError,
       req: express.Request,
       res: express.Response,
       next: express.NextFunction,
