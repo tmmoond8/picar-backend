@@ -18,7 +18,7 @@ export default class Article {
   @Column()
   title!: string;
 
-  @Column()
+  @Column('text')
   content!: string;
 
   @Column()
@@ -30,24 +30,24 @@ export default class Article {
   @ManyToOne((type) => User, (user) => user.articles)
   author!: User;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   photos?: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   thumbnail?: string;
 
   @ManyToOne((type) => Comment, (comment) => comment.article)
   comments?: Comment;
 
-  @Column({ default: 0 })
+  @Column({ default: 0})
   commentCount!: number;
 
-  @Column({ default: 0 })
+  @Column({ default: 0})
   emotionCount!: number;
 
   @Column({ default: false })
   isDelete!: boolean;
-
+  
   @CreateDateColumn()
   createAt!: string;
 
@@ -59,7 +59,7 @@ export default class Article {
       Object.assign({}, this, { author: this.author && this.author.profile }),
     );
   }
-  to() {
+  to () {
     const copied: any = {
       ...this,
       author: this.author.profile

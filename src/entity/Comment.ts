@@ -15,7 +15,7 @@ export default class Comment {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column()
+  @Column('text')
   content!: string;
 
   @Column()
@@ -33,7 +33,7 @@ export default class Comment {
   @Column({ nullable: true })
   about!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'text', nullable: true })
   photos!: string;
 
   replies?: Comment[];
@@ -47,7 +47,7 @@ export default class Comment {
   @UpdateDateColumn()
   updateAt!: string;
 
-  to() {
+  to () {
     const copied: any = { ...this, author: this.author.profile };
     if (this.isDelete) {
       copied.content = '';
