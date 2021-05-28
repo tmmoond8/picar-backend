@@ -54,7 +54,8 @@
     "start": "NODE_ENV=production pm2 start dist/app.js -i 0 --name picar-api",
     "stop": "pm2 kill",
     "restart": "yarn stop && yarn start",
-    "dev": "nodemon --exec ts-node src/app.ts",
+    "sync:db": "ts-node src/app.ts",
+    "dev": "docker start mysql-server && nodemon --exec ts-node src/app.ts",
     "dev:debug": "node --inspect -r ts-node/register src/app.ts",
     "clean": "rimraf dist",
     "test": "echo \"Error: no test specified\" && exit 1"
