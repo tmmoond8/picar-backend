@@ -1,6 +1,7 @@
 import express from 'express';
 import config from './config';
 import Logger from './loaders/logger';
+import cron from './cronJop';
 
 async function startServer() {
   const app = express();
@@ -12,6 +13,7 @@ async function startServer() {
    * So we are using good old require.
    **/
   await require('./loaders').default(app);
+  cron();
 
   app.listen(config.port, () => {
     Logger.info(`
