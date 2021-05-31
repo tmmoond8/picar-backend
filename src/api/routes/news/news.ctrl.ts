@@ -8,7 +8,10 @@ class NewsController {
     next: express.NextFunction,
   ) => {
     try {
-      return res.json({ ok: true, message: 'list', feeds: feedManager.feeds });
+      const news = feedManager.feeds.sort((a, b) => {
+        return new Date(a.pubDate).getTime() > new Date(b.pubDate).getTime() ? -1 : 1
+      });
+      return res.json({ ok: true, message: 'list', news });
     } catch (error) {
       next(error);
     }
