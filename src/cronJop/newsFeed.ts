@@ -115,7 +115,7 @@ const parseAll = async () => {
     const feeds = results.reduce((accum, r) => accum.concat(r), []);
     setTimeout(() => {
       feedManager.appendAll(feeds);
-    }, 10000);
+    }, 60 * 1000);
   });
 }
 
