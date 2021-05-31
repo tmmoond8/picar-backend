@@ -7,6 +7,7 @@ import emotion from './emotion';
 import bookmark from './bookmark';
 import user from './user';
 import notification from './notification';
+import news from './news';
 
 export default (app: Router) => {
   test(app);
@@ -17,4 +18,5 @@ export default (app: Router) => {
   bookmark(app);
   user(app);
   notification(app);
+  news(app);
 };

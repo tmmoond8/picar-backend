@@ -1,7 +1,7 @@
-import newsParser from './newsParser';
+import newsFeed from './newsFeed';
 
 const cron = () => {
-  newsParser.parse();
+  newsFeed.parse();
 };
 
 export default cron;

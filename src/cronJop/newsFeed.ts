@@ -1,38 +1,32 @@
 import RssParser from 'rss-parser';
-import axios from 'axios';
-import iconv from 'iconv-lite';
+import { NewsFeed } from '../types/NewsFeed';
+import feedManager from '../lib/feedManager';
+import { format } from 'date-fns';
 
 const rssParser = new RssParser();
-
-interface Feed {
-  publisher: string;
-  author?: string;
-  title: string;
-  content: string;
-  link: string;
-  pubDate: string;
-  id: string;
-}
+feedManager.init();
 
 const keywords = ['전기차',];
 const reg = new RegExp(`(${keywords.join('|')})`, 'g');
 
-const filter = (feeds: Feed[]) => (
+const filter = (feeds: NewsFeed[]) => (
   feeds.filter((feed) => feed.title.match(reg)) ||
   feeds.filter((feed) => feed.content.match(reg)).length > 2
 )
 
+const generateID = (dateStr: string) => format(new Date(dateStr), 'yyyy-MM-dd:hh');
+
 const parseHeraldNews = async () => {
   const publisher = 'Herald News';
   const { items } = await rssParser.parseURL('http://biz.heraldcorp.com/common_prog/rssdisp.php?ct=010501000000.xml');
-  const feeds: Feed[] = (items as Record<string, string>[]).map((rawData => ({
+  const feeds: NewsFeed[] = (items as Record<string, string>[]).map((rawData => ({
     publisher,
     author: rawData.author,
     title: rawData.title,
     content: rawData.contentSnippet,
     link: rawData.link,
     pubDate: rawData.pubDate,
-    id: `${publisher}_${rawData.pubDate}`,
+    id: `${publisher}_${generateID(rawData.pubDate)}`,
   })))
   return filter(feeds);
 }
@@ -47,14 +41,14 @@ const parseHMG = async () => {
   ]).then(([{ items: items1 }, { items: items2 }]) => {
     return [...items1, ...items2];
   });
-  const feeds: Feed[] = items.map((rawData => ({
+  const feeds: NewsFeed[] = items.map((rawData => ({
     publisher,
     author: rawData.author,
     title: rawData.title,
     content: rawData.contentSnippet,
     link: rawData.link,
     pubDate: rawData.pubDate,
-    id: `${publisher}_${rawData.pubDate}`,
+    id: `${publisher}_${generateID(rawData.pubDate)}`,
   })))
   return filter(feeds);
 }
@@ -67,14 +61,14 @@ const parseNewsWire = async () => {
   ]).then(([{ items: items1 }, { items: items2 }]) => {
     return [...items1, ...items2];
   });
-  const feeds: Feed[] = items.map((rawData => ({
+  const feeds: NewsFeed[] = items.map((rawData => ({
     publisher,
     author: rawData.author,
     title: rawData.title,
     content: rawData.contentSnippet,
     link: rawData.link,
     pubDate: rawData.pubDate,
-    id: `${publisher}_${rawData.pubDate}`,
+    id: `${publisher}_${generateID(rawData.pubDate)}`,
   })))
   return filter(feeds);
 }
@@ -82,14 +76,14 @@ const parseNewsWire = async () => {
 const parseENews = async () => {
   const publisher = 'ET News';
   const { items } = await rssParser.parseURL('http://rss.etnews.com/60066.xml');
-  const feeds: Feed[] = (items as Record<string, string>[]).map((rawData => ({
+  const feeds: NewsFeed[] = (items as Record<string, string>[]).map((rawData => ({
     publisher,
     author: rawData.author,
     title: rawData.title,
     content: rawData.contentSnippet,
     link: rawData.link,
     pubDate: rawData.pubDate,
-    id: `${publisher}_${rawData.pubDate}`,
+    id: `${publisher}_${generateID(rawData.pubDate)}`,
   })))
   return filter(feeds);
 }
@@ -111,10 +105,18 @@ const parseENews = async () => {
 //   return filter(feeds);
 // }
 
-
 const parseAll = async () => {
-  // return Promise.all([parseET(), parseMoneyToday()]).then(results => console.log(results));
-  return Promise.all([parseENews()]).then(results => console.log(results));
+  return Promise.all([
+    parseENews(),
+    parseNewsWire(),
+    parseHMG(),
+    parseHeraldNews(),
+  ]).then(results => {
+    const feeds = results.reduce((accum, r) => accum.concat(r), []);
+    setTimeout(() => {
+      feedManager.appendAll(feeds);
+    }, 10000);
+  });
 }
 
 export default {
