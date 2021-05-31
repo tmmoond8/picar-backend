@@ -7,4 +7,5 @@ export interface NewsFeed {
   link: string;
   pubDate: string;
   id: string;
+  thumbnail?: string;
 }

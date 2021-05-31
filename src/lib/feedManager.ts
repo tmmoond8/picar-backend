@@ -1,5 +1,6 @@
 import { NewsFeed } from '../types/NewsFeed';
 import spreadSheets from './spreadSheet';
+import { getOgImage } from './fetchOgTag';
 
 class FeedManager {
   existedSet: Set<string> = new Set();
@@ -11,8 +12,11 @@ class FeedManager {
     this.existedSet = new Set(data.map(({ id }) => id));
   }
 
-  append(feed: NewsFeed) {
+  async append(feed: NewsFeed) {
     if (!this.existedSet.has(feed.id)) {
+      const image = await getOgImage(feed.link);
+      feed.thumbnail = image;
+      console.log('push');
       this.feeds.push(feed);
       this.existedSet.add(feed.id);
       spreadSheets.append(feed);
