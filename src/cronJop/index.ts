@@ -5,7 +5,7 @@ const cronJob = (hours: number, job: () => void) => {
     job();
     setTimeout(() => {
       scheduleJob();
-    }, hours * 1000)
+    }, hours * 1000 * 60 * 60)
   }
   scheduleJob();
 }

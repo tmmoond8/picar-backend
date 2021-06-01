@@ -40,16 +40,16 @@
     "@types/node": "^14.11.2",
     "@types/url-parse": "^1.4.3",
     "@types/winston": "^2.4.4",
+    "@types/xml2js": "^0.4.8",
     "@typescript-eslint/parser": "^4.2.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-prettier": "^3.1.4",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.4",
     "reflect-metadata": "^0.1.13",
-    "rimraf": "^3.0.2",
     "ts-node": "^9.0.0",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^4.0.3"
+    "typescript": "^4.3"
   },
   "scripts": {
     "build": "yarn clean && tsc",
@@ -60,7 +60,7 @@
     "sync:db": "ts-node src/app.ts",
     "dev": "docker start mysql-server && nodemon --exec ts-node src/app.ts",
     "dev:debug": "node --inspect -r ts-node/register src/app.ts",
-    "clean": "rimraf dist",
+    "clean": "rm -rf dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
