@@ -4,7 +4,6 @@ import feedManager from '../lib/feedManager';
 import { format } from 'date-fns';
 
 const rssParser = new RssParser();
-feedManager.init();
 
 const keywords = ['전기차',];
 const reg = new RegExp(`(${keywords.join('|')})`, 'g');

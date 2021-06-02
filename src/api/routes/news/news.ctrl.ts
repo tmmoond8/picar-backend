@@ -8,6 +8,9 @@ class NewsController {
     next: express.NextFunction,
   ) => {
     try {
+      if (feedManager.feeds.length === 0) {
+        await feedManager.init();
+      }
       const news = feedManager.feeds.sort((a, b) => {
         return new Date(a.pubDate).getTime() > new Date(b.pubDate).getTime() ? -1 : 1
       });
