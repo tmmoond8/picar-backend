@@ -113,9 +113,7 @@ const parseAll = async () => {
     parseHeraldNews(),
   ]).then(results => {
     const feeds = results.reduce((accum, r) => accum.concat(r), []);
-    setTimeout(() => {
-      feedManager.appendAll(feeds);
-    }, 60 * 1000);
+    feedManager.appendAll(feeds);
   });
 }
 

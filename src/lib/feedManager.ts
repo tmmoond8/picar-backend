@@ -16,7 +16,6 @@ class FeedManager {
     if (!this.existedSet.has(feed.id)) {
       const image = await getOgImage(feed.link);
       feed.thumbnail = image;
-      console.log('push');
       this.feeds.push(feed);
       this.existedSet.add(feed.id);
       spreadSheets.append(feed);

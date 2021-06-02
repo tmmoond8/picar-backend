@@ -1,17 +1,12 @@
+import cron from 'node-cron';
 import newsFeed from './newsFeed';
 
-const cronJob = (hours: number, job: () => void) => {
-  const scheduleJob = () => {
-    job();
-    setTimeout(() => {
-      scheduleJob();
-    }, hours * 1000 * 60 * 60)
-  }
-  scheduleJob();
-}
+const newsFeedTask = cron.schedule("0 12 1-31 * *", () => {
+  newsFeed.parse();
+}, { scheduled: false });
 
-const cron = () => {
-  cronJob(12, newsFeed.parse);
+const cronJob = () => {
+  newsFeedTask.start();
 };
 
-export default cron;
+export default cronJob;
