@@ -14,26 +14,23 @@ class FeedManager {
 
   async append(feed: NewsFeed) {
     if (!this.existedSet.has(feed.id)) {
-      const image = await getOgImage(feed.link);
-      feed.thumbnail = image;
-      this.feeds.push(feed);
-      this.existedSet.add(feed.id);
-      spreadSheets.append(feed);
+      try {
+        const image = await getOgImage(feed.link);
+        feed.thumbnail = image;
+        await spreadSheets.append(feed);
+        this.feeds.push(feed);
+        this.existedSet.add(feed.id);
+      } catch (error) {
+        console.warn(error);
+      }
     }
   }
 
-  appendAll(feeds: NewsFeed[]) {
+  async appendAll(feeds: NewsFeed[]) {
     const queues = [...feeds];
-    const appendSheet = async () => {
-      const q = queues.pop();
-      if (q) {
-        this.append(q);
-        setTimeout(() => {
-          appendSheet();
-        }, 5000)
-      }
+    for (let i = 0; i < queues.length; i++) {
+      await this.append(queues[i]);
     }
-    appendSheet();
   }
 }
 
