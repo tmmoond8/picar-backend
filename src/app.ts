@@ -13,7 +13,7 @@ async function startServer() {
    * So we are using good old require.
    **/
   await require('./loaders').default(app);
-  cron();
+  // cron();
 
   app.listen(config.port, () => {
     Logger.info(`
