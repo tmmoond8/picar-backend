@@ -1,7 +1,6 @@
 import express from 'express';
 import config from './config';
 import Logger from './loaders/logger';
-import cron from './cronJop';
 
 async function startServer() {
   const app = express();
