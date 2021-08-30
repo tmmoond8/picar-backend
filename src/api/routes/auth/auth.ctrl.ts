@@ -1,5 +1,5 @@
 import express from 'express';
-import { getConnection } from 'typeorm';
+import { getConnection, Like } from 'typeorm';
 import axios from 'axios';
 import Joi from 'joi';
 import LruChache from 'lru-cache';
@@ -150,6 +150,20 @@ class AuthController {
       }
     }
     return res.json({ ok: false, message: `not found`, data: null });
+  }
+
+  // 관리자 계정 리스트
+  public owwnerList = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { body } = req;
+    if ('user' in body && body.user.profile.email.includes('@owwners.com')) {
+      const admins = await getConnection().getRepository(User).find({ email: Like('%@owwners.com') });
+      return res.json({ ok: true, message: 'admin', admins });
+    }
+    return res.json({ ok: false, message: 'guest' });
   }
 
   // kakao 로그인

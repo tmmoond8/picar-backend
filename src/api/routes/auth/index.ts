@@ -15,6 +15,7 @@ export default (app: Router) => {
   route.post('/login/kakao', authContoller.kakaoLogin);
   route.post('/login/naver', authContoller.naverLogin);
   route.post('/login/owwner', authContoller.owwnerLogin);
+  route.get('/list/owwner', authContoller.owwnerList);
   route.post('/token', authContoller.getToken);
   route.post('/signUp/kakao', authContoller.kakaoSignUp);
   route.post('/signUp', authContoller.signUp);
