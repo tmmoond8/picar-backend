@@ -10,6 +10,31 @@ import BookmarkRepository from '../../../repository/BookmarkRepository';
 
 class ArticleController {
 
+  public last = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    try {
+      const article = await ArticleRepository().last()
+      if (article) {
+        return res.json({
+          ok: true,
+          message: 'get',
+          data: article,
+        });
+      } else {
+        return res.json({
+          ok: false,
+          message: 'get',
+        });
+      }
+    } catch (error) {
+      next(error);
+    }
+    return res.json({ ok: false, message: 'get' });
+  }
+
   public get = async (
     req: express.Request,
     res: express.Response,

@@ -70,6 +70,17 @@ class ArticleRepository {
     }
   }
 
+  last() {
+    if (!this.reposition) {
+      throw Error('database not connected !!!');
+    } else {
+      return this.reposition
+        .createQueryBuilder('article')
+        .orderBy("article.id", "DESC")
+        .getOne();
+    }
+  }
+
   get(id: string) {
     if (!this.reposition) {
       throw Error('database not connected !!!');

@@ -11,6 +11,7 @@ export default (app: Router) => {
   route.get('/list/bookmark', articleContoller.listBookmark);
   route.get('/list/:code', articleContoller.listByCode);
   route.get('/list', articleContoller.list);
+  route.get('/last', articleContoller.last);
   route.get('/search', articleContoller.search);
   route.post('/write', articleContoller.write);
   route.put('/update/:articleId', articleContoller.update);
