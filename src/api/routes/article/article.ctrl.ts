@@ -107,8 +107,8 @@ class ArticleController {
     const { query } = req;
     try {
       const articleIds = JSON.parse(query.articleIds?.toString() ?? '[]');
-      if (!Array.isArray(articleIds)) {
-        throw Error('Parameter error');
+      if (!Array.isArray(articleIds) || articleIds.length === 0) {
+        return res.json({ ok: true, message: 'list', articles: [] });
       }
       const articles = await ArticleRepository().listBookmark(articleIds);
       return res.json({ ok: true, message: 'list', articles: articles.map(article => article.to()) });
@@ -116,7 +116,7 @@ class ArticleController {
       next(error);
     }
 
-    return res.json({ ok: true, message: 'list' });
+    return res.json({ ok: true, message: 'list', articles: [] });
   };
 
 
