@@ -203,6 +203,9 @@ class ArticleController {
     next: express.NextFunction,
   ) => {
     const { body } = req;
+    if (!body.user) {
+      return res.status(403).json({ ok: true, message: 'not athorized' });
+    }
     try {
       const user = await getConnection()
         .getRepository(User)
