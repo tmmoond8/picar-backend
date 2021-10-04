@@ -12,6 +12,7 @@ export default (app: Router) => {
   route.get('/uuid/list', authContoller.list);
   route.post('/uuid/:id', authContoller.setUUID);
   route.get('/uuid/:id', authContoller.getUUID);
+  route.post('/authorize/apple', authContoller.appleAuthorize);
   route.post('/login/kakao', authContoller.kakaoLogin);
   route.post('/login/naver', authContoller.naverLogin);
   route.post('/login/apple', authContoller.appleLogin);

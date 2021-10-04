@@ -144,6 +144,22 @@ class AuthController {
         refresh_token: data.refresh_token,
       });
     }
+    if (provider === 'apple') {
+      try {
+        const { data } = await getAppleToken(code);
+        cache.set(data.access_token, data.id_token);
+        return res.json({
+          ok: true,
+          message: 'getToken',
+          access_token: data.access_token,
+          refresh_token: data.refresh_token,
+        });
+      } catch (error: any) {
+        if ('response' in error) {
+          console.log('error', error.response.data);
+        }
+      }
+    }
     return res.json({ ok: false, message: `getToken: ${code}, ${provider}` });
   };
 
@@ -305,38 +321,56 @@ class AuthController {
     return res.json({ ok: true, naverUser: response });
   };
 
+  // apple 로그인 시작
+  public appleAuthorize = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { code, id_token } = req.body;
+
+    return res.redirect(`https://picar.loca.lt/login?code=${code}&state=apple`);
+  };
+
   // apple 로그인
   public appleLogin = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { code, id_token } = req.body;
-    console.log(`code: ${code}, id_token: ${id_token}`);
-    try {
-      const { data } = await getAppleToken(code);
-      console.log('rr', data);
-    } catch (error: any) {
-      if ('response' in error) {
-        console.log('error', error.response.data);
+    const { accessToken, refreshToken } = req.body;
+    const idToken = cache.get(accessToken);
+    if (idToken) {
+      cache.set(accessToken, null);
+      const { sub: id, email } = (jwt.decode(idToken) ?? {}) as {
+        sub: string;
+        email: string;
+      };
+      const user = await UserRepository().get(id, 'apple');
+
+      if (user && !user.isDelete) {
+        user.accessToken = accessToken;
+        user.refreshToken = refreshToken;
+        await UserRepository().save(user);
+        const token = await user.generateToken;
+        setCookie(req, res, token);
+        return res.json({
+          ok: true,
+          message: 'user',
+          profile: user.profile,
+          token,
+        });
       }
+      return res.json({
+        ok: true,
+        user: {
+          id,
+          email,
+        },
+      });
     }
 
-    // const { data: { response } } = await axios.get('https://openapi.naver.com/v1/nid/me', {
-    //   headers: {
-    //     Authorization: `Bearer ${accessToken}`
-    //   }
-    // });
-    // const user = await UserRepository().get(response.id.toString(), 'apple');
-    // if (user && !user.isDelete) {
-    //   user.accessToken = accessToken;
-    //   user.refreshToken = refreshToken;
-    //   await UserRepository().save(user);
-    //   const token = await user.generateToken;
-    //   setCookie(req, res, token);
-    //   return res.json({ ok: true, message: 'user', profile: user.profile, token });
-    // }
-    return res.redirect(process.env.APPLE_REDIRECT_URI ?? '/error');
+    return res.json({ ok: true });
   };
 
   public list = async (
