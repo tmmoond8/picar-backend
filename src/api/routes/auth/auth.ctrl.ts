@@ -329,7 +329,9 @@ class AuthController {
   ) => {
     const { code, id_token } = req.body;
 
-    return res.redirect(`https://picar.loca.lt/login?code=${code}&state=apple`);
+    return res.redirect(
+      `${process.env.CLIENT_URL}/login?code=${code}&state=apple`,
+    );
   };
 
   // apple 로그인
