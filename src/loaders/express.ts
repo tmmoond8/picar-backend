@@ -30,10 +30,12 @@ export default ({ app }: { app: express.Application }) => {
   // The magic package that prevents frontend developers going nuts
   // Alternate description:
   // Enable Cross Origin Resource Sharing to all origins by default
-  app.use(cors({
-    origin: true,
-    credentials: true
-  }));
+  app.use(
+    cors({
+      origin: true,
+      credentials: true,
+    }),
+  );
 
   // Some sauce that always add since 2014
   // "Lets you use HTTP verbs such as PUT or DELETE in places where the client doesn't support it."
@@ -42,6 +44,7 @@ export default ({ app }: { app: express.Application }) => {
 
   app.use(morgan('common'));
 
+  app.use(express.urlencoded({ extended: false }));
   // Middleware that transforms the raw string of req.body into json
   app.use(bodyParser.json());
 

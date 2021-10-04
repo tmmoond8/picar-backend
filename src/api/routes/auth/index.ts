@@ -9,11 +9,12 @@ export default (app: Router) => {
   route.get('/logout', authContoller.logout);
   route.get('/getUser', testMiddleware, authContoller.getUser);
   route.get('/check', authContoller.check);
-  route.get('/uuid/list', authContoller.list)
+  route.get('/uuid/list', authContoller.list);
   route.post('/uuid/:id', authContoller.setUUID);
   route.get('/uuid/:id', authContoller.getUUID);
   route.post('/login/kakao', authContoller.kakaoLogin);
   route.post('/login/naver', authContoller.naverLogin);
+  route.post('/login/apple', authContoller.appleLogin);
   route.post('/login/owwner', authContoller.owwnerLogin);
   route.get('/list/owwner', authContoller.owwnerList);
   route.post('/token', authContoller.getToken);

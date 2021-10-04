@@ -1,17 +1,19 @@
 import express from 'express';
 import { getConnection, Like } from 'typeorm';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import Joi from 'joi';
 import LruChache from 'lru-cache';
+import * as jwt from 'jsonwebtoken';
 import config from '../../../config';
 import UserRepository from '../../../repository/UserRepository';
 import User, { createUser } from '../../../entity/User';
-import { setCookie, clearCookie } from '../../../lib/token'; ''
+import { setCookie, clearCookie } from '../../../lib/token';
+import { getAppleToken } from '../../../lib/appleSignIn';
 
 const cache = new LruChache<string, any>({
   max: 1000,
   maxAge: 1000 * 60 * 3, // 3분
-})
+});
 
 class AuthController {
   public getUser = async (
@@ -36,7 +38,9 @@ class AuthController {
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { query: { snsId, provider } } = req;
+    const {
+      query: { snsId, provider },
+    } = req;
     let user = await UserRepository().get(snsId as string, provider as string);
     if (user) {
       const token = await user.generateToken;
@@ -61,36 +65,39 @@ class AuthController {
     }
   };
 
-
   public delete = async (
     req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    next: express.NextFunction,
   ) => {
-    const { params: { code } } = req;
+    const {
+      params: { code },
+    } = req;
     const user = await UserRepository().getByCode(code);
     if (!user) {
       return res.json({
         ok: false,
         message: 'not found',
-      })
+      });
     }
     user.isDelete = false;
-    user.snsId = `DELETE_${user.snsId}`
+    user.snsId = `DELETE_${user.snsId}`;
     clearCookie(req, res);
     await UserRepository().save(user);
     return res.json({
       ok: true,
       message: 'delete user',
-    })
-  }
+    });
+  };
 
   public getUUID = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { params: { id } } = req;
+    const {
+      params: { id },
+    } = req;
     const tokens = cache.get(id);
     if (tokens) {
       cache.set(id, null);
@@ -105,7 +112,9 @@ class AuthController {
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { params: { id } } = req;
+    const {
+      params: { id },
+    } = req;
     const { accessToken, refreshToken } = req.body;
     if (id) {
       cache.set(id, { accessToken, refreshToken });
@@ -113,7 +122,6 @@ class AuthController {
     }
     return res.json({ ok: false, message: `setUUid: ${id}` });
   };
-
 
   public getToken = async (
     req: express.Request,
@@ -127,9 +135,14 @@ class AuthController {
         headers: {
           'X-Naver-Client-Id': config.auth.naverClientId,
           'X-Naver-Client-Secret': config.auth.naverClientSecret,
-        }
+        },
       });
-      return res.json({ ok: true, message: "getToken", access_token: data.access_token, refresh_token: data.refresh_token });
+      return res.json({
+        ok: true,
+        message: 'getToken',
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+      });
     }
     return res.json({ ok: false, message: `getToken: ${code}, ${provider}` });
   };
@@ -141,17 +154,23 @@ class AuthController {
     next: express.NextFunction,
   ) => {
     const { email, password, user } = req.body;
-    const isOwwner = 'user' in req.body && req.body.user.profile.email.includes('@owwners.com');
+    const isOwwner =
+      'user' in req.body &&
+      req.body.user.profile.email.includes('@owwners.com');
     if (password === config.adminKey || isOwwner) {
       const user = await UserRepository().getByEmail(email);
       if (user && !user.isDelete) {
         const token = await user.generateToken;
         setCookie(req, res, token);
-        return res.json({ ok: true, message: `logined`, profile: user.profile });
+        return res.json({
+          ok: true,
+          message: `logined`,
+          profile: user.profile,
+        });
       }
     }
     return res.json({ ok: false, message: `not found`, data: null });
-  }
+  };
 
   // 관리자 계정 리스트
   public owwnerList = async (
@@ -161,11 +180,13 @@ class AuthController {
   ) => {
     const { body } = req;
     if ('user' in body && body.user.profile.email.includes('@owwners.com')) {
-      const admins = await getConnection().getRepository(User).find({ email: Like('%@owwners.com') });
+      const admins = await getConnection()
+        .getRepository(User)
+        .find({ email: Like('%@owwners.com') });
       return res.json({ ok: true, message: 'admin', admins });
     }
     return res.json({ ok: false, message: 'guest' });
-  }
+  };
 
   // kakao 로그인
   public kakaoLogin = async (
@@ -176,8 +197,8 @@ class AuthController {
     const { accessToken, refreshToken } = req.body;
     const { data } = await axios.get('https://kapi.kakao.com/v2/user/me', {
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
     const user = await UserRepository().get(data.id.toString(), 'kakao');
     if (user && !user.isDelete) {
@@ -186,20 +207,23 @@ class AuthController {
       await UserRepository().save(user);
       const token = await user.generateToken;
       setCookie(req, res, token);
-      return res.json({ ok: true, message: 'user', profile: user.profile, token });
+      return res.json({
+        ok: true,
+        message: 'user',
+        profile: user.profile,
+        token,
+      });
     }
     return res.json({ ok: true, kakaoUser: data });
-  }
+  };
 
   // Kakao 회원가입 TODO DEPRECATED
   public kakaoSignUp = async (
     req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    next: express.NextFunction,
   ) => {
-    const {
-      body,
-    } = req;
+    const { body } = req;
     delete body.user;
     const validation = validateLoginProfile(body);
     if (validation.error) {
@@ -223,11 +247,9 @@ class AuthController {
   public signUp = async (
     req: express.Request,
     res: express.Response,
-    next: express.NextFunction
+    next: express.NextFunction,
   ) => {
-    const {
-      body,
-    } = req;
+    const { body } = req;
     delete body.user;
     const validation = validateLoginProfile(body);
     if (validation.error) {
@@ -241,12 +263,16 @@ class AuthController {
       }
       const token = await user.generateToken;
       setCookie(req, res, token);
-      return res.json({ ok: true, message: 'user', profile: user.profile, token });
+      return res.json({
+        ok: true,
+        message: 'user',
+        profile: user.profile,
+        token,
+      });
     } catch (error) {
       return next(error);
     }
   };
-
 
   // naver 로그인
   public naverLogin = async (
@@ -255,10 +281,12 @@ class AuthController {
     next: express.NextFunction,
   ) => {
     const { accessToken, refreshToken } = req.body;
-    const { data: { response } } = await axios.get('https://openapi.naver.com/v1/nid/me', {
+    const {
+      data: { response },
+    } = await axios.get('https://openapi.naver.com/v1/nid/me', {
       headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
+        Authorization: `Bearer ${accessToken}`,
+      },
     });
     const user = await UserRepository().get(response.id.toString(), 'naver');
     if (user && !user.isDelete) {
@@ -267,10 +295,49 @@ class AuthController {
       await UserRepository().save(user);
       const token = await user.generateToken;
       setCookie(req, res, token);
-      return res.json({ ok: true, message: 'user', profile: user.profile, token });
+      return res.json({
+        ok: true,
+        message: 'user',
+        profile: user.profile,
+        token,
+      });
     }
     return res.json({ ok: true, naverUser: response });
-  }
+  };
+
+  // apple 로그인
+  public appleLogin = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { code, id_token } = req.body;
+    console.log(`code: ${code}, id_token: ${id_token}`);
+    try {
+      const { data } = await getAppleToken(code);
+      console.log('rr', data);
+    } catch (error: any) {
+      if ('response' in error) {
+        console.log('error', error.response.data);
+      }
+    }
+
+    // const { data: { response } } = await axios.get('https://openapi.naver.com/v1/nid/me', {
+    //   headers: {
+    //     Authorization: `Bearer ${accessToken}`
+    //   }
+    // });
+    // const user = await UserRepository().get(response.id.toString(), 'apple');
+    // if (user && !user.isDelete) {
+    //   user.accessToken = accessToken;
+    //   user.refreshToken = refreshToken;
+    //   await UserRepository().save(user);
+    //   const token = await user.generateToken;
+    //   setCookie(req, res, token);
+    //   return res.json({ ok: true, message: 'user', profile: user.profile, token });
+    // }
+    return res.redirect(process.env.APPLE_REDIRECT_URI ?? '/error');
+  };
 
   public list = async (
     req: express.Request,
@@ -278,16 +345,15 @@ class AuthController {
     next: express.NextFunction,
   ) => {
     return res.json({ ok: true, message: `list`, list: cache.dump() });
-  }
+  };
 }
 
 export default new AuthController();
 
-
 /**
-   * 사용자의 로그인 데이터를 검증
-   * @param profile
-   */
+ * 사용자의 로그인 데이터를 검증
+ * @param profile
+ */
 function validateLoginProfile(profile: any) {
   const schema = Joi.object().keys({
     email: Joi.string().email().required(),
@@ -321,10 +387,12 @@ async function getUser(
     accessToken: string;
     refreshToken: string;
   },
-  provider: 'kakao' | 'naver'
+  provider: 'kakao' | 'naver',
 ) {
   const { email, snsId, thumbnail, name, group, profileImage } = profile;
-  let user = await getConnection().getRepository(User).findOne({ where: { snsId, provider } });
+  let user = await getConnection()
+    .getRepository(User)
+    .findOne({ where: { snsId, provider } });
   if (!user) {
     const newUser = createUser({
       email,
