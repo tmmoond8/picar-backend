@@ -8,15 +8,19 @@ import bookmark from './bookmark';
 import user from './user';
 import notification from './notification';
 import news from './news';
+import report from './report';
 
 export default (app: Router) => {
-  test(app);
-  article(app);
-  auth(app);
-  comment(app);
-  emotion(app);
-  bookmark(app);
-  user(app);
-  notification(app);
-  news(app);
+  [
+    test,
+    article,
+    auth,
+    comment,
+    emotion,
+    bookmark,
+    user,
+    notification,
+    news,
+    report,
+  ].forEach((route) => route(app));
 };
