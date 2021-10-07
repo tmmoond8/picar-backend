@@ -38,7 +38,7 @@ class BookmarkRepository {
       return this.reposition
         .createQueryBuilder('report')
         .where('report.articleId = :articleId', {
-          articleId: parseInt(articleId),
+          articleId,
         })
         .andWhere(commentId ? 'report.commentId = :commentId' : '1=1', {
           commentId,
