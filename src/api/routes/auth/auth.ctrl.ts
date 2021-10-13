@@ -1,6 +1,6 @@
 import express from 'express';
 import { getConnection, Like } from 'typeorm';
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import Joi from 'joi';
 import LruChache from 'lru-cache';
 import * as jwt from 'jsonwebtoken';

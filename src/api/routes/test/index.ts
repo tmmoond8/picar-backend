@@ -9,4 +9,5 @@ export default (app: Router) => {
 
   route.get('/', testMiddleware, TestrController.getTest);
   route.post('/', TestrController.postTest);
+  route.post('/log', TestrController.log);
 };
