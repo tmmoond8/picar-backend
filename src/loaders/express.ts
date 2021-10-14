@@ -34,6 +34,8 @@ export default ({ app }: { app: express.Application }) => {
     cors({
       origin: true,
       credentials: true,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Custom-Token'],
     }),
   );
 
