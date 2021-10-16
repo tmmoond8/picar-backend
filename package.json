@@ -62,6 +62,7 @@
     "dev": "docker start mysql-server && nodemon --exec ts-node src/app.ts",
     "dev:debug": "node --inspect -r ts-node/register src/app.ts",
     "clean": "rm -rf dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lt": "lt -p 6060 -s picar-api"
   }
 }

@@ -16,7 +16,7 @@ export const createSignWithAppleSecret = () => {
   return token;
 };
 
-export const getAppleToken = async (code: string) =>
+export const getAppleToken = async (code: string, app?: string) =>
   axios.post(
     'https://appleid.apple.com/auth/token',
     qs.stringify({
@@ -24,7 +24,9 @@ export const getAppleToken = async (code: string) =>
       code,
       client_secret: createSignWithAppleSecret(),
       client_id: process.env.APPLE_SERVICE_ID,
-      redirect_uri: process.env.APPLE_REDIRECT_URI,
+      redirect_uri: app
+        ? `${process.env.APPLE_REDIRECT_URI}/app`
+        : process.env.APPLE_REDIRECT_URI,
     }),
     {
       headers: {

@@ -90,6 +90,14 @@ class AuthController {
     });
   };
 
+  public listUUID = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    return res.json({ ok: true, message: `list`, list: cache.dump() });
+  };
+
   public getUUID = async (
     req: express.Request,
     res: express.Response,
@@ -116,6 +124,7 @@ class AuthController {
       params: { id },
     } = req;
     const { accessToken, refreshToken } = req.body;
+    console.log('body', req.body);
     if (id) {
       cache.set(id, { accessToken, refreshToken });
       return res.json({ ok: true, message: `setUUid: ${id}` });
@@ -123,12 +132,21 @@ class AuthController {
     return res.json({ ok: false, message: `setUUid: ${id}` });
   };
 
+  public clearUUID = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    cache.reset();
+    return res.json({ ok: true, message: `uuid clear` });
+  };
+
   public getToken = async (
     req: express.Request,
     res: express.Response,
     next: express.NextFunction,
   ) => {
-    const { code, provider } = req.body;
+    const { code, provider, app } = req.body;
     if (provider === 'naver') {
       const url = `https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=${config.auth.naverClientId}&client_secret=${config.auth.naverClientSecret}&code=${code}&state=naver`;
       const { data } = await axios.get(url, {
@@ -146,7 +164,7 @@ class AuthController {
     }
     if (provider === 'apple') {
       try {
-        const { data } = await getAppleToken(code);
+        const { data } = await getAppleToken(code, app);
         cache.set(data.access_token, data.id_token);
         return res.json({
           ok: true,
@@ -334,6 +352,20 @@ class AuthController {
     );
   };
 
+  // apple 앱 로그인 시작
+  public appleAuthorizeApp = async (
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction,
+  ) => {
+    const { code, id_token } = req.body;
+    console.log('author app');
+
+    return res.redirect(
+      `${process.env.CLIENT_URL}/login/apple/index.html?code=${code}`,
+    );
+  };
+
   // apple 로그인
   public appleLogin = async (
     req: express.Request,
@@ -373,14 +405,6 @@ class AuthController {
     }
 
     return res.json({ ok: true });
-  };
-
-  public list = async (
-    req: express.Request,
-    res: express.Response,
-    next: express.NextFunction,
-  ) => {
-    return res.json({ ok: true, message: `list`, list: cache.dump() });
   };
 }
 
