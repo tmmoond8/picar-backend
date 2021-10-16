@@ -1,7 +1,4 @@
-import {
-  getConnection,
-  Repository,
-} from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import Notification from '../entity/Notification';
 
 class NotificationRepository {
@@ -18,7 +15,7 @@ class NotificationRepository {
         .createQueryBuilder('notification')
         .innerJoinAndSelect('notification.user', 'user')
         .where('notification.target = :target', { target })
-        .orderBy("notification.createAt", "DESC")
+        .orderBy('notification.createAt', 'DESC')
         .getMany();
     }
   }
@@ -35,11 +32,17 @@ class NotificationRepository {
     if (!this.reposition) {
       throw Error('database not connected !!!');
     } else {
-      console.log('(' + (notificationIds.map(id => `notification.id = ${id}`)).join(' OR ') + ')');
-      return this.reposition.createQueryBuilder()
+      return this.reposition
+        .createQueryBuilder()
         .update(Notification)
         .set({ isViewd: true })
-        .where( '(' + (notificationIds.map(id => `notification.id = '${id}'`)).join(' OR ') + ')')
+        .where(
+          '(' +
+            notificationIds
+              .map((id) => `notification.id = '${id}'`)
+              .join(' OR ') +
+            ')',
+        )
         .execute();
     }
   }

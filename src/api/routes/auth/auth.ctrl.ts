@@ -124,7 +124,6 @@ class AuthController {
       params: { id },
     } = req;
     const { accessToken, refreshToken } = req.body;
-    console.log('body', req.body);
     if (id) {
       cache.set(id, { accessToken, refreshToken });
       return res.json({ ok: true, message: `setUUid: ${id}` });
@@ -359,7 +358,6 @@ class AuthController {
     next: express.NextFunction,
   ) => {
     const { code, id_token } = req.body;
-    console.log('author app');
 
     return res.redirect(
       `${process.env.CLIENT_URL}/login/apple/index.html?code=${code}`,

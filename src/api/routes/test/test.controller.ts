@@ -38,7 +38,6 @@ class TestController {
     next: express.NextFunction,
   ) => {
     const { body } = req;
-    console.log('log', JSON.stringify(body));
     res.json({ ok: true, body: JSON.stringify(body) });
   };
 }
