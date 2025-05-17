@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "6060:6060"
+    environment:
+      - NODE_ENV=development
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_USER=picar
+      - DB_PASSWORD=vlzk
+      - DB_DATABASE=picar_db
+      - DB_TYPE=mysql
+    depends_on:
+      - db
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - picar-network
+
+  db:
+    image: mysql:8.0
+    ports:
+      - "33360:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=picar_db
+      - MYSQL_USER=picar
+      - MYSQL_PASSWORD=vlzk
+      - MYSQL_CHARSET=utf8mb4
+      - MYSQL_COLLATION=utf8mb4_unicode_ci
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./.sql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ./.sql/createDatabase.sql:/docker-entrypoint-initdb.d/createDatabase.sql
+      - ./data:/var/lib/mysql
+    networks:
+      - picar-network
+
+volumes:
+  mysql-data:
+
+networks:
+  picar-network:
+    driver: bridge 
