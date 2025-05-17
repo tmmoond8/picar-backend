@@ -58,7 +58,7 @@
     "stop": "pm2 stop picar-api",
     "restart": "yarn stop && yarn start",
     "sync:db": "ts-node src/app.ts",
-    "dev": "docker start mysql-server && nodemon --exec ts-node src/app.ts",
+    "dev": "nodemon --exec ts-node src/app.ts",
     "dev:debug": "node --inspect -r ts-node/register src/app.ts",
     "clean": "rm -rf dist",
     "test": "echo \"Error: no test specified\" && exit 1",

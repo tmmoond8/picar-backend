@@ -20,6 +20,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    command: yarn dev
     networks:
       - picar-network
 
@@ -36,10 +37,9 @@ services:
       - MYSQL_COLLATION=utf8mb4_unicode_ci
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     volumes:
-      - mysql-data:/var/lib/mysql
+      - ./data:/var/lib/mysql
       - ./.sql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
       - ./.sql/createDatabase.sql:/docker-entrypoint-initdb.d/createDatabase.sql
-      - ./data:/var/lib/mysql
     networks:
       - picar-network
 
