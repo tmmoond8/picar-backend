@@ -10,7 +10,7 @@ services:
     environment:
       - NODE_ENV=development
       - DB_HOST=db
-      - DB_PORT=33360
+      - DB_PORT=3306
       - DB_USER=picar
       - DB_PASSWORD=vlzk
       - DB_DATABASE=picar_db

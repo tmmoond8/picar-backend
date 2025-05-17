@@ -30,7 +30,7 @@ export default {
     password: process.env.DB_PASSWORD ?? '',
     database: process.env.DB_DATABASE ?? '',
     host: process.env.DB_HOST ?? '',
-    port: Number(process.env.DB_PORT) ?? 33360,
+    port: Number(process.env.DB_PORT) ?? 3306,
     type: process.env.DB_TYPE ?? 'mysql',
   } as DataBaseConfig,
   isDev: process.env.NODE_ENV !== 'production',
