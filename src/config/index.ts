@@ -38,5 +38,5 @@ export default {
   auth: {
     naverClientId: process.env.NAVER_CLIENT_ID ?? '',
     naverClientSecret: process.env.NAVER_CLIENT_SECRET ?? '',
-  }
+  },
 };

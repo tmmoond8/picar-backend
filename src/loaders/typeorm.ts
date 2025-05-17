@@ -8,4 +8,7 @@ export default async () =>
     ...config.db,
     entities,
     synchronize: true,
+    extra: {
+      charset: 'utf8mb4_unicode_ci',
+    },
   });
