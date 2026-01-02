@@ -9,6 +9,6 @@ export default async () =>
     entities,
     synchronize: true,
     extra: {
-      charset: 'utf8mb4_unicode_ci',
+      charset: 'utf8mb4',
     },
   });

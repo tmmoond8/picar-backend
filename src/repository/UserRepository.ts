@@ -5,52 +5,31 @@ import {
 import User from '../entity/User';
 
 class UserRepository {
-  reposition: Repository<User> | null = null;
-  constructor() {
-    this.reposition = getConnection().getRepository(User);
+  private get repository(): Repository<User> {
+    return getConnection().getRepository(User);
   }
 
   search(options: { search?: string }) {
-    if (!this.reposition) {
-      throw Error('database not connected !!!');
-    } else {
-      return this.reposition
-        .createQueryBuilder('user')
-        .where(options.search ? 'user.name like :search' : '1=1', { search: `%${options.search}%`})
-        .getMany();
-    }
+    return this.repository
+      .createQueryBuilder('user')
+      .where(options.search ? 'user.name like :search' : '1=1', { search: `%${options.search}%`})
+      .getMany();
   }
 
   get(snsId: string, provider: string) {
-    if (!this.reposition) {
-      throw Error('database not connected !!!');
-    } else {
-      return this.reposition.findOne({ where: { snsId, provider } });
-    }
+    return this.repository.findOne({ where: { snsId, provider } });
   }
 
   getByCode(code: string) {
-    if (!this.reposition) {
-      throw Error('database not connected !!!');
-    } else {
-      return this.reposition.findOne({ where: { code } });
-    }
+    return this.repository.findOne({ where: { code } });
   }
 
   getByEmail(email: string) {
-    if (!this.reposition) {
-      throw Error('database not connected !!!');
-    } else {
-      return this.reposition.findOne({ where: { email } });
-    }
+    return this.repository.findOne({ where: { email } });
   }
 
   save(user: User) {
-    if (!this.reposition) {
-      throw Error('database not connected !!!');
-    } else {
-      this.reposition.save(user);
-    }
+    return this.repository.save(user);
   }
 }
 
